@@ -1,0 +1,15 @@
+# Search Reference File
+# Format: QUERY_TERM: Description of what should be considered a true match
+# Use this file to define what constitutes a relevant result for each search term
+
+
+GENERAL ELECTRIC: General Electric Company, General Electric, GE Aviation, GE Power, GE Renewable Energy, GE Healthcare, GE Capital, 
+
+COCA-COLA: The Coca-Cola Company, Coca Cola, Coke, soft drinks, beverages, James Quincey, US beverage corporation, Atlanta, carbonated drinks
+
+Johnson & Johnson: Johnson & Johnson, J&J, pharmaceuticals, medical devices, consumer health products, Joaquin Duato, American multinational corporation, healthcare, Band-Aid, Tylenol
+
+
+
+# Add more entries as needed following the same format
+# QUERY_TERM: comma-separated list of relevant terms and descriptions
