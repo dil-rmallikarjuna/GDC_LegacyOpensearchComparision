@@ -1,138 +1,170 @@
-# Search Results Comparison Automation
+# GDC Automation Test
 
-This tool automates the comparison between old MySQL search results and new OpenSearch API results to identify true matches vs false positives.
+This repository contains automated testing tools for Global Database Compliance (GDC) systems, focusing on OpenSearch entity regression testing.
+
+## Overview
+
+The project provides comprehensive testing capabilities for:
+- **OpenSearch Entity Regression Testing**: Compare current OpenSearch results with existing GDC baseline data
+- **Multi-language Support**: Handle entities in various languages (Arabic, Chinese, Cyrillic, Hebrew, etc.)
+- **Comprehensive Reporting**: Generate Excel and HTML reports with detailed analysis
+
+## Project Structure
+
+```
+├── GDC Old System Result.xlsx          # Input data for regression testing
+├── testcases/                           # Testing framework
+│   ├── consolidated_regression_test.py  # Main consolidated testing framework
+│   ├── excel_driven_regression_test.py  # Individual entity testing
+│   ├── results/                         # Generated test reports
+│   └── requirements.txt                 # Testing dependencies
+└── requirements.txt                     # Main dependencies
+```
 
 ## Features
 
-- 🔍 Automated comparison of search results
-- 📊 Excel and HTML report generation
-- 🎯 True positive/false positive analysis
-- 📈 Similarity scoring and metrics
-- 🔄 Batch processing of multiple queries
-- 🎨 Colored console output with progress bars
+### OpenSearch Regression Testing
+- **Excel-driven testing**: Read entities from Excel input file
+- **API integration**: Call OpenSearch API with appropriate entity types
+- **Baseline comparison**: Compare results with existing GDC data
+- **Multi-source analysis**: Handle different data sources (WATCH, PEP, RIGHTS, SOE, etc.)
+- **Comprehensive reporting**: Generate detailed Excel and HTML reports
 
-## Setup
+### Reporting Features
+- **Excel Reports**: Multi-sheet reports with summary, details, and "All Hits" consolidated view
+- **HTML Reports**: Web-friendly reports with Unicode support for multi-language content
+- **Visual indicators**: Color-coded status indicators for different record types
+- **Comprehensive coverage**: Show common records, missing records, and new records
 
-1. **Install Dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+## Quick Start
 
-2. **Configure Database and API Settings**
-   - Update `config.py` with your actual database name
-   - Ensure your API token is valid and not expired
-   - Verify database connection details
-
-3. **Update Table Structure**
-   - Modify `mysql_client.py` to match your actual MySQL table structure
-   - Update field mappings in `comparison_engine.py` based on your data schema
-
-## Usage
-
-### Basic Usage
+### 1. Setup Environment
 ```bash
-python3 main.py
+pip install -r requirements.txt
 ```
 
-### Custom Configuration
-Edit `main.py` to specify:
-- Custom queries to test
-- MySQL table name
-- Comparison parameters
-
-## File Structure
-
+### 2. Configure API Settings
+Update the API configuration in the testing scripts:
+```python
+self.api_config = {
+    'url': 'https://your-opensearch-endpoint.com/search',
+    'headers': {
+        'x-api-key': 'your-api-key',
+        'Content-Type': 'application/json'
+    }
+}
 ```
-├── main.py                 # Main automation script
-├── config.py              # Configuration settings
-├── api_client.py          # OpenSearch API client
-├── mysql_client.py        # MySQL database client
-├── comparison_engine.py   # Result comparison logic
-├── report_generator.py    # Excel/HTML report generation
-├── requirements.txt       # Python dependencies
-└── reports/              # Generated reports directory
+
+### 3. Run Consolidated Regression Testing
+```bash
+cd testcases
+python3 consolidated_regression_test.py
 ```
+
+This will:
+- Read entities from `GDC Old System Result.xlsx`
+- Call OpenSearch API for each entity
+- Compare results with existing GDC baseline data
+- Generate comprehensive Excel and HTML reports
+
+## Input Data Format
+
+The Excel input file (`GDC Old System Result.xlsx`) should contain:
+- **Entity Name**: Name to search for
+- **Type**: "E" for entities, "P" for persons  
+- **Existing GDC Results**: Baseline data in JSON format
+
+## Output Reports
+
+### Excel Reports
+- **Overall Summary**: High-level statistics across all entities
+- **All Hits - Comprehensive**: Every record from both GDC and OpenSearch with status indicators
+- **Entity Summary**: One row per entity with totals
+- **Individual Entity Sheets**: Detailed breakdown per entity with source-specific results
+
+### HTML Reports
+- **Table of Contents**: Easy navigation between entities
+- **Multi-language Support**: Proper Unicode rendering for Arabic, Chinese, Cyrillic, Hebrew text
+- **Color-coded Results**: Visual status indicators (Common, Missing from OpenSearch, Missing from GDC)
+- **Detailed Comparisons**: Side-by-side result analysis
 
 ## Configuration
 
-### Database Settings
-Update these in `config.py`:
-- `DB_NAME`: Your actual database name
-- Table structure in `mysql_client.py`
-
-### API Settings
-- `API_TOKEN`: Ensure token is not expired
-- `API_URL`: Verify endpoint is correct
-
-### Comparison Settings
-- `similarity_threshold`: Adjust in `comparison_engine.py` (default: 0.8)
-- Field mappings for old vs new result structures
-
-## Reports
-
-The tool generates two types of reports:
-
-### Excel Report
-- **Summary Sheet**: Overview of all queries with metrics
-- **Detailed Comparison Sheet**: Line-by-line comparison results
-
-### HTML Report
-- Interactive web report with:
-  - Overall statistics dashboard
-  - Query-by-query breakdown
-  - Detailed false positive/negative analysis
-
-## Customization
-
-### Adding New Comparison Logic
-Modify `comparison_engine.py` to:
-- Add custom similarity algorithms
-- Include additional matching criteria
-- Adjust scoring mechanisms
-
-### Custom Report Formats
-Extend `report_generator.py` to:
-- Add new report formats (PDF, CSV, etc.)
-- Customize report styling
-- Include additional metrics
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Database Connection Failed**
-   - Verify host, port, username, password
-   - Check network connectivity
-   - Ensure database exists
-
-2. **API Authentication Failed**
-   - Check if token is expired
-   - Verify token format and permissions
-   - Test API endpoint manually
-
-3. **No Results Found**
-   - Verify table name and structure
-   - Check query format
-   - Ensure data exists in database
-
-### Debug Mode
-Add debug prints or use Python debugger to trace issues:
+### API Configuration
+Update the OpenSearch API endpoint and authentication in the testing scripts:
 ```python
-import pdb; pdb.set_trace()
+self.api_config = {
+    'url': 'https://15krnwu233.execute-api.us-east-1.amazonaws.com/prod/search',
+    'headers': {
+        'x-api-key': 'your-api-key-here',
+        'Content-Type': 'application/json'
+    }
+}
 ```
 
-## Next Steps
+### Entity Type Mapping
+- **Type "E"**: Searches entities/organizations
+- **Type "P"**: Searches persons
 
-1. **Update Database Schema**: Modify `mysql_client.py` to match your actual table structure
-2. **Test with Real Data**: Run with a small subset of real queries first
-3. **Tune Parameters**: Adjust similarity thresholds based on your data
-4. **Schedule Automation**: Set up cron jobs or scheduled tasks for regular comparisons
-5. **Add Monitoring**: Implement alerts for significant changes in match rates
+## Dependencies
+
+- **pandas**: Data manipulation and Excel generation
+- **openpyxl**: Excel file handling
+- **requests**: HTTP API calls
+- **datetime**: Timestamp generation
+- **json**: JSON data processing
+- **html**: HTML escaping for Unicode support
+
+## Recent Updates
+
+- ✅ Consolidated regression testing framework
+- ✅ Excel-driven entity testing from input file
+- ✅ Multi-language Unicode support in HTML reports
+- ✅ Comprehensive "All Hits" reporting with status indicators
+- ✅ Clean codebase focused on core testing functionality
+
+## Usage Examples
+
+### Running the Main Test Suite
+```bash
+cd testcases
+python3 consolidated_regression_test.py
+```
+
+This generates:
+- `results/consolidated_regression_report_[timestamp].xlsx`
+- `results/consolidated_regression_report_[timestamp].html`
+
+### Running Individual Entity Tests
+```bash
+cd testcases
+python3 excel_driven_regression_test.py
+```
+
+## Report Interpretation
+
+### Status Categories
+- **Common**: Records found in both existing GDC and current OpenSearch
+- **Missing from OpenSearch**: Records only in existing GDC data
+- **Missing from Existing GDC**: Records only in current OpenSearch
+
+### Excel "All Hits" Sheet
+Shows every record with columns:
+- Entity Name, Entity Type, Source
+- Status (Common/Missing from OpenSearch/Missing from Existing GDC)
+- ID, Full Name, Other Names
+- Presence indicators (✓ Yes / ✗ No for each system)
+
+## Latest Test Results
+
+**Last Run:** September 16, 2025
+- **Total Entities Tested:** 17 (10 organizations, 7 persons)
+- **Common Records:** 3
+- **New in OpenSearch:** 3
+- **Missing from OpenSearch:** 106
+
+The testing framework successfully processes multi-language entities and generates comprehensive reports for analysis.
 
 ## Support
 
-For issues or questions:
-1. Check the console output for error messages
-2. Review the generated reports for insights
-3. Verify configuration settings
-4. Test individual components separately
+For questions or issues, refer to the testcases/README.md file or review the generated reports for detailed analysis results.

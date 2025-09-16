@@ -1,0 +1,1766 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consolidated Regression Test Results</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background-color: #f0f0f0; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+        .overall-summary { margin: 20px 0; }
+        .summary-card { display: inline-block; margin: 10px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; min-width: 200px; }
+        .entity-section { margin: 30px 0; border: 1px solid #ddd; border-radius: 5px; }
+        .entity-header { background-color: #e0e0e0; padding: 15px; font-weight: bold; font-size: 1.2em; }
+        .entity-content { padding: 15px; }
+        .source-section { margin: 20px 0; }
+        .source-title { background-color: #f5f5f5; padding: 10px; font-weight: bold; }
+        table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .status-common { background-color: #d4edda; }
+        .status-new { background-color: #cce5ff; }
+        .status-missing { background-color: #f8d7da; }
+        .badge { padding: 3px 8px; border-radius: 3px; font-size: 0.8em; font-weight: bold; }
+        .badge-common { background-color: #28a745; color: white; }
+        .badge-new { background-color: #007bff; color: white; }
+        .badge-missing { background-color: #dc3545; color: white; }
+        .toc { background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc li { margin: 5px 0; }
+        .toc a { text-decoration: none; color: #007bff; }
+        .toc a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Consolidated Regression Test Results</h1>
+        <p><strong>Test Time:</strong> 2025-09-15 13:34:37</p>
+        <p><strong>Total Entities Tested:</strong> 17</p>
+    </div>
+
+    <div class="overall-summary">
+        <h2>Overall Summary</h2>
+        <div class="summary-card">
+            <h3>Common Records</h3>
+            <div style="font-size: 2em; color: #28a745;">7</div>
+            <div>Records found in both systems</div>
+        </div>
+        
+        <div class="summary-card">
+            <h3>New in OpenSearch</h3>
+            <div style="font-size: 2em; color: #007bff;">12</div>
+            <div>Records only in current OpenSearch</div>
+        </div>
+        
+        <div class="summary-card">
+            <h3>Missing from OpenSearch</h3>
+            <div style="font-size: 2em; color: #dc3545;">102</div>
+            <div>Records only in existing GDC search</div>
+        </div>
+    </div>
+
+    <div class="toc">
+        <h2>Table of Contents</h2>
+        <ul>
+            <li><a href="#entity_0">national bank of dubai (Entity)</a></li>
+            <li><a href="#entity_1">narendra modi (Person)</a></li>
+            <li><a href="#entity_2">RBI (Entity)</a></li>
+            <li><a href="#entity_3">Мартыненко (Entity)</a></li>
+            <li><a href="#entity_4">Сергей Юрьевич (Entity)</a></li>
+            <li><a href="#entity_5">Сергей Анатольевич (Entity)</a></li>
+            <li><a href="#entity_6">Коваленко (Entity)</a></li>
+            <li><a href="#entity_7">张东良 (Person)</a></li>
+            <li><a href="#entity_8">深圳泛华南枫保险代理有限公司 (Entity)</a></li>
+            <li><a href="#entity_9">العون الإسلامي, العون التعليمي للفلسطينيين (Entity)</a></li>
+            <li><a href="#entity_10">אלעון אלאסלאמי; אלעון אלתעלימי ללפלסטינין (Entity)</a></li>
+            <li><a href="#entity_11">Эркан (Person)</a></li>
+            <li><a href="#entity_12">Турчин, Збигнев-Станислав (Polish) (Person)</a></li>
+            <li><a href="#entity_13">Габора, Истван (Hungarian) (Person)</a></li>
+            <li><a href="#entity_14">AGILENT TECHNOLOGIES (Entity)</a></li>
+            <li><a href="#entity_15">王伟 (Person)</a></li>
+            <li><a href="#entity_16">安倍晋三 (Person)</a></li>
+
+        </ul>
+    </div>
+
+    <div class="entity-section" id="entity_0">
+        <div class="entity-header">
+            national bank of dubai (Entity)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 2 Common, 0 New in OpenSearch, 5 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">ICIJ</div>
+                <p>Existing GDC Search: 1 | Current OpenSearch: 0</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>80000327942</td>
+                            <td>NATIONAL BANK OF DUBAI</td>
+                            <td></td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="source-section">
+                <div class="source-title">SOE</div>
+                <p>Existing GDC Search: 4 | Current OpenSearch: 1</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-common">
+                            <td><span class="badge badge-common">Common</span></td>
+                            <td>90100030818</td>
+                            <td>Emirates NBD Bank PJSC</td>
+                            <td>Emirates NBD Group; Emirates NBD; Emirates National Bank of Dubai; Emirates National Bank of Dubai /Emirates NBD; بنك الإمارات دبي الوطني</td>
+                            <td>No changes</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>90100174046</td>
+                            <td>National Bank of Egypt - Dubai International Financial Centre (Limited)</td>
+                            <td>البنك الأهلى المصرى - مركز دبى المالى العالمى (المحدودة)</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>90100134613</td>
+                            <td>dnata</td>
+                            <td>Dubai National Air Travel Authority; دناتا</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>90100091613</td>
+                            <td>The Emirates National Dubai Real Estate Company LLC</td>
+                            <td></td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="source-section">
+                <div class="source-title">WATCH</div>
+                <p>Existing GDC Search: 2 | Current OpenSearch: 4</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-common">
+                            <td><span class="badge badge-common">Common</span></td>
+                            <td>20200902319</td>
+                            <td>National Bank of Dubai</td>
+                            <td></td>
+                            <td>No changes</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20201010705</td>
+                            <td>Dubai National Lottery Foundation</td>
+                            <td></td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_1">
+        <div class="entity-header">
+            narendra modi (Person)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 1 Common, 0 New in OpenSearch, 0 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">PEP</div>
+                <p>Existing GDC Search: 1 | Current OpenSearch: 3</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-common">
+                            <td><span class="badge badge-common">Common</span></td>
+                            <td>10101177164</td>
+                            <td>Narendra Damodardas Modi</td>
+                            <td>Modi, Narendra; Damodar Das Modi, Narendra; Modi ji; Namo; नरेन्द्र मोदी</td>
+                            <td>Full_Name:  -&gt; Narendra Damodardas Modi</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_2">
+        <div class="entity-header">
+            RBI (Entity)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 2 Common, 7 New in OpenSearch, 1 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">ICIJ</div>
+                <p>Existing GDC Search: 1 | Current OpenSearch: 0</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>80000268318</td>
+                            <td>RBI Finance Ltd.</td>
+                            <td></td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="source-section">
+                <div class="source-title">MEX</div>
+                <p>Existing GDC Search: 0 | Current OpenSearch: 9</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-new">
+                            <td><span class="badge badge-new">New in OpenSearch</span></td>
+                            <td>30580005017</td>
+                            <td>CONFECCIONES RIB SA DE CV</td>
+                            <td></td>
+                            <td>New record in current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-new">
+                            <td><span class="badge badge-new">New in OpenSearch</span></td>
+                            <td>30600524370</td>
+                            <td>CONFECCIONES RIB SA DE CV</td>
+                            <td></td>
+                            <td>New record in current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-new">
+                            <td><span class="badge badge-new">New in OpenSearch</span></td>
+                            <td>30630018517</td>
+                            <td>SC PDCION PES RIB TR M U SCL</td>
+                            <td></td>
+                            <td>New record in current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-new">
+                            <td><span class="badge badge-new">New in OpenSearch</span></td>
+                            <td>30580061553</td>
+                            <td>ELLIS PRIME RIB ADMINISTRADORA DE RESTAURANTES SA DE CV</td>
+                            <td></td>
+                            <td>New record in current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-new">
+                            <td><span class="badge badge-new">New in OpenSearch</span></td>
+                            <td>30580019174</td>
+                            <td>SC PDCION PES RIB TR M U SCL</td>
+                            <td></td>
+                            <td>New record in current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-new">
+                            <td><span class="badge badge-new">New in OpenSearch</span></td>
+                            <td>30580019174</td>
+                            <td>SC PDCION PES RIB TR M U SCL</td>
+                            <td></td>
+                            <td>New record in current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="source-section">
+                <div class="source-title">SOE</div>
+                <p>Existing GDC Search: 1 | Current OpenSearch: 1</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-common">
+                            <td><span class="badge badge-common">Common</span></td>
+                            <td>90100078007</td>
+                            <td>Reserve Bank of India</td>
+                            <td>RBI; India&#x27;s Central Bank; भारतीय रिज़र्व बैंक</td>
+                            <td>No changes</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="source-section">
+                <div class="source-title">PEP</div>
+                <p>Existing GDC Search: 0 | Current OpenSearch: 4</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-new">
+                            <td><span class="badge badge-new">New in OpenSearch</span></td>
+                            <td>10101420444</td>
+                            <td>Darwish bin Saif bin Said Al Maharbi</td>
+                            <td>Darwish bin Saif Al Maharbi; Darwish bin Saif al Maha-rbi; Darwish bin Saif al-Maharbi</td>
+                            <td>New record in current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="source-section">
+                <div class="source-title">WATCH</div>
+                <p>Existing GDC Search: 1 | Current OpenSearch: 3</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-common">
+                            <td><span class="badge badge-common">Common</span></td>
+                            <td>20200811370</td>
+                            <td>RBI Holding Pte Ltd</td>
+                            <td></td>
+                            <td>No changes</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_3">
+        <div class="entity-header">
+            Мартыненко (Entity)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 0 Common, 0 New in OpenSearch, 2 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">SANCTION</div>
+                <p>Existing GDC Search: 2 | Current OpenSearch: 0</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720017005</td>
+                            <td>Martynenko Danyyil Viacheslavovych</td>
+                            <td>Мартиненко Даниїл В&#x27;ячеславович; Martynenko Daniil; Мартиненко Даниїл В&#x27;ячеславович; Мартыненко Даниил Вячеславович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720006608</td>
+                            <td>Martynenko Yuliia Volodymyrivna</td>
+                            <td>Мартиненко Юлія Володимирівна; Martynenko Iuliia Vladimirovna; Мартыненко Юлия Владимировна</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_4">
+        <div class="entity-header">
+            Сергей Юрьевич (Entity)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 0 Common, 0 New in OpenSearch, 30 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">SANCTION</div>
+                <p>Existing GDC Search: 30 | Current OpenSearch: 0</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10840001010</td>
+                            <td>Sergey Yurevich KUZOVLEV</td>
+                            <td>Sergey Yurevich IGNATOV; Sergey Yurevich TAMBOV; Сергей Юрьевич КУЗОВЛЕВ; Сергей ИГНАТОВ; Сергей ТAMБOB</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10840005046</td>
+                            <td>Sergey Yurievich PANTELEYEV</td>
+                            <td>Sergey Yurievich PANTELEEV; Сергей Юрьевич ПАНТЕЛЕЕВ</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10840004706</td>
+                            <td>Sergey Yurievich TOLMACHEV</td>
+                            <td>Сергей Юрьевич ТОЛМАЧЕВ</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10840000863</td>
+                            <td>Sergey Yurievich GLAZYEV</td>
+                            <td>Сергей Юрьевич ГЛАЗЬЕВ</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720001330</td>
+                            <td>Fabrychnyi Serhii Yuriiovych</td>
+                            <td>Фабричний Сергій Юрійович; Фабричний Сергій Юрійович; Фабричный Сергей Юрьевич</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720011499</td>
+                            <td>Bitkin Serhii Yuriiovych</td>
+                            <td>Біткін Сергій Юрійович; Bitkin Sergei; Биткин Сергей Юрьевич; Біткін Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720011445</td>
+                            <td>Baidarov Serhii Yuriiovych</td>
+                            <td>Байдаров Сергій Юрійович; Baidarov Sergei; Байдаров Сергей Юрьевич; Байдаров Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720003341</td>
+                            <td>Bidonko Serhii Yuriiovych</td>
+                            <td>Бідонько Сергій Юрійович; BIDONKO SERGEI; Бидонько Сергей Юрьевич; БИДОНЬКО СЕРГЕЙ ЮРЬЕВИЧ; Бідонько Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720009077</td>
+                            <td>Barinov Serhii Yuriiovych</td>
+                            <td>Барінов Сергій Юрійович; Barinov Sergei; Баринов Сергей Юрьевич; Барінов Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720000054</td>
+                            <td>Hlaziev Serhii Yuriiovych</td>
+                            <td>Глазьєв Сергій Юрійович; Глазьев Сергей Юрьевич; Глазьєв Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720000449</td>
+                            <td>Kuzovliev Serhii Yuriiovych</td>
+                            <td>Кузовлєв Сергій Юрійович; Ігнатов Сергій Юрійович; Кузовлев Сергей Юрьевич; Кузовлєв Сергій Юрійович; «Тамбов»</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720009601</td>
+                            <td>Korytov Serhii Yuriiovych</td>
+                            <td>Коритов Сергій Юрійович; Korytov Sergey; Коритов Сергій Юрійович; Корытов Сергей Юрьевич</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720013165</td>
+                            <td>Kozlov Serhii Yuriiovych</td>
+                            <td>Козлов Сергій Юрійович; Kozlov Sergei; Козлов Сергей Юрьевич; Козлов Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720000414</td>
+                            <td>Istrakov Serhii Yuriiovych</td>
+                            <td>Істраков Сергій Юрійович; Истраков Сергей Юрьевич; Істраков Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720011536</td>
+                            <td>Kopytov Serhii Yuriiovych</td>
+                            <td>Копитов Сергій Юрійович; Kopytov Sergei; Копитов Сергій Юрійович; Копытов Сергей Юрьевич</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720017018</td>
+                            <td>Mykhailov Serhii Yuriiovych</td>
+                            <td>Михайлов Сергій Юрійович; Mikhailov Sergei; Михайлов Сергей Юрьевич; Михайлов Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720017006</td>
+                            <td>Milushkin Serhii Yuriiovych</td>
+                            <td>Мілушкін Сергій Юрійович; Milushkin Sergei; Милушкин Сергей Юрьевич; Мілушкін Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720018377</td>
+                            <td>Kots Serhii Yuriiovych</td>
+                            <td>Коц Сергій Юрійович; Kots Sergei; Коц Сергей Юрьевич; Коц Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720018384</td>
+                            <td>Lukoianchev Serhii Yuriiovych</td>
+                            <td>Лукоянчев Сергій Юрійович; Lukoianchev Sergei; Лукоянчев Сергей Юрьевич; Лукоянчев Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720011795</td>
+                            <td>Menzhynskyi Serhii Yuriiovych</td>
+                            <td>Менжинський Сергій Юрійович; Menzhinskii Sergei; Менжинский Сергей Юрьевич; Менжинський Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720010524</td>
+                            <td>Zaitsev Serhii Yuriiovych</td>
+                            <td>Зайцев Сергій Юрійович; Zaitsev Sergey; Зайцев Сергей Юрьевич; Зайцев Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720013019</td>
+                            <td>Marychev Serhii Yuriiovych</td>
+                            <td>Маричев Сергій Юрійович; Marichev Sergei; Маричев Сергей Юрьевич; Маричев Сергій Юрійович; Марічєв Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720008958</td>
+                            <td>Nekrasov Serhii Yuriiovych</td>
+                            <td>Некрасов Сергій Юрійович; Nekrasov Sergei; Некрасов Сергей Юрьевич; Некрасов Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720016947</td>
+                            <td>Zanin Serhii Yuriiovych</td>
+                            <td>Занін Сергій Юрійович; Zanin Sergei; Занин Сергей Юрьевич; Занін Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720013538</td>
+                            <td>Tolmachov Serhii Yuriiovych</td>
+                            <td>Толмачов Сергій Юрійович; Tolmachev Sergei; Толмачев Сергей Юрьевич; Толмачов Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720001313</td>
+                            <td>Ten Serhii Yuriiovych</td>
+                            <td>Тен Сергій Юрійович; TEN SERGEY; Тен Сергей Юрьевич; ТЕН СЕРГЕЙ ЮРЬЕВИЧ; Тен Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720010558</td>
+                            <td>Zviahin Serhii Yuriiovych</td>
+                            <td>Звягін Сергій Юрійович; Zviagin Sergei; Звягин Сергей Юрьевич; Звягін Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720019682</td>
+                            <td>Vnukov Serhii Yuriiovych</td>
+                            <td>Внуков Сергій Юрійович; Vnukov Sergei; Внуков Сергей Юрьевич</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720005860</td>
+                            <td>Koziakov Serhii Yuriiovych</td>
+                            <td>Koziakov Sergei; Козьяков Сергій Юрійович; Koziakov Serhii; KOZIAKOV SERHII; Козьяков Сергей Юрьевич; Козьяков Сергій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720021897</td>
+                            <td>Yevdokimov Serhii Yuriiovych</td>
+                            <td>Євдокімов Сергій Юрійович; Evdokimov Sergei; Евдокимов Сергей Юрьевич</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_5">
+        <div class="entity-header">
+            Сергей Анатольевич (Entity)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 0 Common, 0 New in OpenSearch, 0 Missing from OpenSearch</p>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_6">
+        <div class="entity-header">
+            Коваленко (Entity)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 0 Common, 0 New in OpenSearch, 19 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">SANCTION</div>
+                <p>Existing GDC Search: 18 | Current OpenSearch: 0</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10840004975</td>
+                            <td>Vladimir Vladislavovich KOVALENKO</td>
+                            <td>Владимир Владиславович КОВАЛЕНКО</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720000367</td>
+                            <td>Bondariev Dmytro Yevhenovych</td>
+                            <td>Бондарєв Дмитро Євгенович; Бондарев Дмитрий Евгеньевич; Бондарєв Дмитро Євгенович; Коваленко Дмитро Євгенович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720014361</td>
+                            <td>Kovalenko Andrii Mykolaiovych</td>
+                            <td>Коваленко Андрій Миколайович; Kovalenko Andrei; Коваленко Андрей Николаевич; Коваленко Андрій Миколайович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720003569</td>
+                            <td>Kovalenko Andrii Oleksiiovych</td>
+                            <td>Коваленко Андрій Олексійович; Kovalenko Andrey; Коваленко Андрей Алексеевич; Коваленко Андрій Олексійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720010990</td>
+                            <td>Kovalenko Andrii Viacheslavovych</td>
+                            <td>Коваленко Андрій В’ячеславович; Kovalenko Andrii; Коваленко Андрій В’ячеславович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720012140</td>
+                            <td>Kovalenko Anna Dmytrivna</td>
+                            <td>Коваленко Анна Дмитрівна; Kovalenko Anna; Коваленко Анна Дмитриевна; Коваленко Анна Дмитрівна</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720009619</td>
+                            <td>Kovalenko Dmytro Viktorovych</td>
+                            <td>Коваленко Дмитро Вікторович; Kovalenko Dmitrii; Коваленко Дмитрий Викторович; Коваленко Дмитро Вікторович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720000425</td>
+                            <td>Kovalenko Liia Viktorivna</td>
+                            <td>Kovalenko Liliia Viktorivna; Mamet Liliia Viktorivna; Коваленко Лілія Вікторівна; Мамет Лілія Вікторівна; KOVALENKO LIIA; MAMET LIIA; Коваленко Лия Викторовна; Коваленко Лілія Вікторівна; Коваленко Лія Вікторівна; Мамет Лия Викторовна; Мамет Лілія Вікторівна; Мамет Лія Вікторівна</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720016269</td>
+                            <td>Kovalenko Mykola Mykolaiovych</td>
+                            <td>Коваленко Микола Миколайович; Kovalenko Nikolai; Коваленко Микола Миколайович; Коваленко Николай Николаевич</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720009618</td>
+                            <td>Kovalenko Oleksandra Serhiyivna</td>
+                            <td>Коваленко Олександра Сергіївна; Kovalenko Aleksandra; Коваленко Александра Сергеевна; Коваленко Олександра Сергіївна</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720015793</td>
+                            <td>Kovalenko Oleksii Yuriiovych</td>
+                            <td>Коваленко Олексій Юрійович; Kovalenko Aleksei; Коваленко Алексей Юрьевич; Коваленко Олексій Юрійович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720019760</td>
+                            <td>Kovalenko Roman Oleksiiovych</td>
+                            <td>Коваленко Роман Олексійович; Kovalenko Roman</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720016374</td>
+                            <td>Kovalenko Valerii Mykhailovych</td>
+                            <td>Коваленко Валерій Михайлович; Kovalenko Valerii; Коваленко Валерий Михайлович; Коваленко Валерій Михайлович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720017954</td>
+                            <td>Kovalenko Volodymyr Vladyslavovych</td>
+                            <td>Коваленко Володимир Владиславович; Kovalenko Vladimir; Kovalenko Volodymyr; Коваленко Владимир Владиславович; Коваленко Володимир Владиславович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720019768</td>
+                            <td>Kovalenko Yevheniia Volodymyrivna</td>
+                            <td>Коваленко Євгенія Володимирівна; Kovalenko Evgeniia; Коваленко Евгения Владимировна</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720016381</td>
+                            <td>Kovalenko Nataliia Valeriyivna</td>
+                            <td>Kovalenko Natalia; KOVALENKO NATALIA; Бабенко Наталя Валеріївна; Коваленко Наталія Валеріївна; Коваленко Наталья Валериевна</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720021744</td>
+                            <td>Kovalenko Kostiantyn Olehovych</td>
+                            <td>Коваленко Костянтин Олегович; Kovalenko Konstantin; Коваленко Константин Олегович</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10720022258</td>
+                            <td>Kovalenko Yurii Yuriiovych</td>
+                            <td>Коваленко Юрій Юрійович; Kovalenko Iurii; Коваленко Юрий Юрьевич</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="source-section">
+                <div class="source-title">SOE</div>
+                <p>Existing GDC Search: 1 | Current OpenSearch: 0</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>90100135612</td>
+                            <td>Federal State Budgetary Scientific Institution &quot;Federal Scientific Center - All-Russian Research Institute of Experimental Veterinary Medicine named after K.I. Scriabin and Ya.R. Kovalenko of the Russian Academy of Sciences&quot;</td>
+                            <td>Федеральное государственное бюджетное научное учреждение «Федеральный научный центр – Всероссийский научно-исследовательский институт экспериментальной ветеринарии имени К.И. Скрябина и Я.Р. Коваленко Российской академии наук»</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_7">
+        <div class="entity-header">
+            张东良 (Person)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 0 Common, 0 New in OpenSearch, 1 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">WATCH</div>
+                <p>Existing GDC Search: 1 | Current OpenSearch: 0</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20200343374</td>
+                            <td>Dongliang Zhang</td>
+                            <td>张东良</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_8">
+        <div class="entity-header">
+            深圳泛华南枫保险代理有限公司 (Entity)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 0 Common, 0 New in OpenSearch, 1 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">WATCH</div>
+                <p>Existing GDC Search: 1 | Current OpenSearch: 0</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20200491299</td>
+                            <td>Fanhua-Nanfeng Insurance Agency Ltd. Shenzhen</td>
+                            <td>深圳泛华南枫保险代理有限公司</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_9">
+        <div class="entity-header">
+            العون الإسلامي, العون التعليمي للفلسطينيين (Entity)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 1 Common, 0 New in OpenSearch, 0 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">WATCH</div>
+                <p>Existing GDC Search: 1 | Current OpenSearch: 4</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-common">
+                            <td><span class="badge badge-common">Common</span></td>
+                            <td>20200443541</td>
+                            <td>MUSLIM AID</td>
+                            <td>EDUCATIONAL AID FOR PALESTINIANS; אלעון אלאסלאמי; אלעון אלתעלימי ללפלסטינין; العون الإسلامي, العون التعليمي للفلسطينيين, لندن</td>
+                            <td>No changes</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_10">
+        <div class="entity-header">
+            אלעון אלאסלאמי; אלעון אלתעלימי ללפלסטינין (Entity)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 1 Common, 0 New in OpenSearch, 0 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">WATCH</div>
+                <p>Existing GDC Search: 1 | Current OpenSearch: 4</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-common">
+                            <td><span class="badge badge-common">Common</span></td>
+                            <td>20200443541</td>
+                            <td>MUSLIM AID</td>
+                            <td>EDUCATIONAL AID FOR PALESTINIANS; אלעון אלאסלאמי; אלעון אלתעלימי ללפלסטינין; العون الإسلامي, العون التعليمي للفلسطينيين, لندن</td>
+                            <td>No changes</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_11">
+        <div class="entity-header">
+            Эркан (Person)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 0 Common, 0 New in OpenSearch, 1 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">WATCH</div>
+                <p>Existing GDC Search: 1 | Current OpenSearch: 0</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20201047376</td>
+                            <td>Erkan Chetin</td>
+                            <td>Четин, Эркан</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_12">
+        <div class="entity-header">
+            Турчин, Збигнев-Станислав (Polish) (Person)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 0 Common, 0 New in OpenSearch, 1 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">WATCH</div>
+                <p>Existing GDC Search: 1 | Current OpenSearch: 0</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20200438627</td>
+                            <td>Zbignev-Stanislav Turchin</td>
+                            <td>Турчин, Збигнев-Станислав</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_13">
+        <div class="entity-header">
+            Габора, Истван (Hungarian) (Person)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 0 Common, 0 New in OpenSearch, 1 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">WATCH</div>
+                <p>Existing GDC Search: 1 | Current OpenSearch: 0</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20201000889</td>
+                            <td>Istvan Gabora</td>
+                            <td>Габора, Истван</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_14">
+        <div class="entity-header">
+            AGILENT TECHNOLOGIES (Entity)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 0 Common, 5 New in OpenSearch, 7 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">ICIJ</div>
+                <p>Existing GDC Search: 2 | Current OpenSearch: 0</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>80000618156</td>
+                            <td>Agilent Technologies S.ar.1</td>
+                            <td></td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>80000622286</td>
+                            <td>Agilent Technologies Europe B.V.</td>
+                            <td></td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="source-section">
+                <div class="source-title">MEX</div>
+                <p>Existing GDC Search: 1 | Current OpenSearch: 2</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-new">
+                            <td><span class="badge badge-new">New in OpenSearch</span></td>
+                            <td>30580001305</td>
+                            <td>AGILENT TECHNOLOGIES MEXICO S DE RL DE CV</td>
+                            <td></td>
+                            <td>New record in current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>60000000001</td>
+                            <td>AGILENT TECHNOLOGIES</td>
+                            <td></td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="source-section">
+                <div class="source-title">RIGHTS</div>
+                <p>Existing GDC Search: 2 | Current OpenSearch: 2</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-new">
+                            <td><span class="badge badge-new">New in OpenSearch</span></td>
+                            <td>30710000422</td>
+                            <td>Agilent Technologies</td>
+                            <td></td>
+                            <td>New record in current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-new">
+                            <td><span class="badge badge-new">New in OpenSearch</span></td>
+                            <td>30710000423</td>
+                            <td>Agilent Technologies LDA UK Ltd.</td>
+                            <td></td>
+                            <td>New record in current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>30710016421</td>
+                            <td>AGILENT TECHNOLOGIES</td>
+                            <td></td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>30710026512</td>
+                            <td>AGILENT TECHNOLOGIES</td>
+                            <td></td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="source-section">
+                <div class="source-title">WATCH</div>
+                <p>Existing GDC Search: 2 | Current OpenSearch: 7</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-new">
+                            <td><span class="badge badge-new">New in OpenSearch</span></td>
+                            <td>20200150005</td>
+                            <td>Agilent Technologies Inc.</td>
+                            <td></td>
+                            <td>New record in current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-new">
+                            <td><span class="badge badge-new">New in OpenSearch</span></td>
+                            <td>20201803757</td>
+                            <td>Agilent Technologies, Inc.</td>
+                            <td></td>
+                            <td>New record in current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20200560595</td>
+                            <td>AGILENT TECHNOLOGIES</td>
+                            <td></td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20200560680</td>
+                            <td>AGILENT TECHNOLOGIES</td>
+                            <td></td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_15">
+        <div class="entity-header">
+            王伟 (Person)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 0 Common, 0 New in OpenSearch, 32 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">PEP</div>
+                <p>Existing GDC Search: 16 | Current OpenSearch: 0</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10101314111</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10101648644</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10101648646</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10101736660</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10101590913</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10101648645</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10101314501</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10101314502</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10101590912</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10101605878</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10101936222</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10101936223</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10102448662</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10102482292</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10102512041</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10102566971</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="source-section">
+                <div class="source-title">WATCH</div>
+                <p>Existing GDC Search: 16 | Current OpenSearch: 0</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20200560595</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20200560680</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20201003369</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20200376639</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20200376642</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20200834129</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20200895562</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20201003367</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20201003368</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20201037310</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20201037311</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20201447580</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20201559506</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20201581027</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20201645880</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>20201679495</td>
+                            <td>Wei Wang</td>
+                            <td>王伟</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="entity-section" id="entity_16">
+        <div class="entity-header">
+            安倍晋三 (Person)
+        </div>
+        <div class="entity-content">
+            <p><strong>Summary:</strong> 0 Common, 0 New in OpenSearch, 1 Missing from OpenSearch</p>
+
+            <div class="source-section">
+                <div class="source-title">PEP</div>
+                <p>Existing GDC Search: 1 | Current OpenSearch: 0</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Other Names</th>
+                            <th>Changes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr class="status-missing">
+                            <td><span class="badge badge-missing">Missing from OpenSearch</span></td>
+                            <td>10101067843</td>
+                            <td>Shinzo Abe</td>
+                            <td>Abe, Shinzō; 安倍 晋三</td>
+                            <td>Was in existing GDC search but missing from current OpenSearch</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
