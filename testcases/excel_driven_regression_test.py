@@ -479,18 +479,26 @@ class ExcelDrivenRegressionTest:
         
         return comparison_result
     
-    def generate_individual_reports(self, entity, comparison_result):
+    def generate_individual_reports(self, entity, comparison_result, main_folder=None):
         """
         Generate individual Excel and HTML reports for a single entity
         """
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Use main folder if provided, otherwise create individual folder
+        if main_folder:
+            folder_path = main_folder
+        else:
+            folder_name = f"regression_test_{timestamp}"
+            folder_path = f"results/{folder_name}"
+            os.makedirs(folder_path, exist_ok=True)
         
         # Create safe filename from entity name
         safe_name = "".join(c for c in entity["name"] if c.isalnum() or c in (' ', '-', '_')).rstrip()
         safe_name = safe_name.replace(' ', '_')[:50]  # Limit length
         
         # Generate Excel report
-        excel_filename = f"results/{safe_name}_regression_{timestamp}.xlsx"
+        excel_filename = f"{folder_path}/{safe_name}_regression_{timestamp}.xlsx"
         
         with pd.ExcelWriter(excel_filename, engine='openpyxl') as writer:
             # Create summary sheet
@@ -583,7 +591,7 @@ class ExcelDrivenRegressionTest:
             all_hits_df.to_excel(writer, sheet_name='All Hits', index=False)
         
         # Generate HTML report
-        html_filename = f"results/{safe_name}_regression_{timestamp}.html"
+        html_filename = f"{folder_path}/{safe_name}_regression_{timestamp}.html"
         self.generate_html_report(entity, comparison_result, html_filename)
         
         return excel_filename, html_filename
@@ -800,6 +808,13 @@ class ExcelDrivenRegressionTest:
         print("Excel-Driven Regression Testing Framework")
         print("=" * 80)
         
+        # Create main test run folder with timestamp
+        run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        main_folder = f"results/regression_test_run_{run_timestamp}"
+        os.makedirs(main_folder, exist_ok=True)
+        print(f"Results will be saved to: {main_folder}")
+        print()
+        
         # Load entities from Excel
         entities = self.load_entities_from_excel()
         
@@ -823,7 +838,7 @@ class ExcelDrivenRegressionTest:
             comparison_result = self.compare_data(entity['name'], entity['baseline_data'], current_data)
             
             # Generate individual reports
-            excel_file, html_file = self.generate_individual_reports(entity, comparison_result)
+            excel_file, html_file = self.generate_individual_reports(entity, comparison_result, main_folder)
             
             # Print summary
             self.print_entity_summary(entity, comparison_result)
@@ -841,9 +856,9 @@ class ExcelDrivenRegressionTest:
             })
         
         # Generate overall summary
-        self.generate_overall_summary(all_results)
+        self.generate_overall_summary(all_results, main_folder)
     
-    def generate_overall_summary(self, all_results):
+    def generate_overall_summary(self, all_results, main_folder=None):
         """
         Generate an overall summary of all tests
         """

@@ -19,7 +19,7 @@ class ConsolidatedRegressionTest:
         # API Configuration - Your actual AWS API Gateway endpoint
         self.api_config = {
             "url": "https://15krnwu233.execute-api.us-east-1.amazonaws.com/prod/search",
-            "api_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJyZWFkLWNsaWVudCIsInJvbGUiOiJyZWFkIiwicGVybWlzc2lvbnMiOlsicmVhZCJdLCJleHAiOjE3NTc2NTYwMjAsImlhdCI6MTc1NzY1MjQyMCwiaXNzIjoiZ2RjLXNlYXJjaC1pZGVudGl0eS1zZXJ2aWNlIn0.71UeA_p0PQZBZymTAWshk9nJV0afSt_jM5fwW3QgtUo",
+            "api_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJyZWFkLWNsaWVudCIsInJvbGUiOiJyZWFkIiwicGVybWlzc2lvbnMiOlsicmVhZCJdLCJleHAiOjE3NTgwODcyMzIsImlhdCI6MTc1ODA4MzYzMiwiaXNzIjoiZ2RjLXNlYXJjaC1pZGVudGl0eS1zZXJ2aWNlIn0.8-ffozf_8N1AmiWMgyG1y321K94EzKR_vyQ9VdhqcRM",
             "timeout": 30
         }
         
@@ -137,7 +137,7 @@ class ConsolidatedRegressionTest:
         # Payload for OpenSearch API call
         payload = {
             "query": entity_name,
-            "schemas": ["col", "rights", "mex", "watch", "soe", "pep", "sanctions"],
+            "schemas": ["col", "rights", "mex", "watch", "soe", "pep", "sanction"],
             "limit": 100,
             "search_types": ["keyword", "phonetic", "similarity"]
         }
@@ -331,11 +331,13 @@ class ConsolidatedRegressionTest:
     
     def compare_data(self, entity_name, baseline_data, current_data):
         """
-        Compare baseline data with current API data
+        Compare baseline data with current API data and determine test pass/fail
         """
         comparison_result = {
             "entity_name": entity_name,
             "test_timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "test_status": "PASS",  # Will be set to FAIL if conditions are met
+            "failure_reasons": [],
             "sources": {}
         }
         
@@ -472,7 +474,159 @@ class ConsolidatedRegressionTest:
                 }
             }
         
+        # Check for test failure conditions with refined logic
+        total_baseline = sum(source_data["baseline_count"] for source_data in comparison_result["sources"].values())
+        
+        # Failure Condition 1: Missing RELEVANT records (OpenSearch doesn't have entries from GDC that match the searched entity)
+        relevant_missing_records = self.validate_missing_record_relevance(entity_name, baseline_data, comparison_result)
+        if relevant_missing_records:
+            comparison_result["test_status"] = "FAIL"
+            comparison_result["failure_reasons"].append(f"Missing {len(relevant_missing_records)} relevant records in OpenSearch that exist in GDC")
+            comparison_result["relevant_missing_records"] = relevant_missing_records
+        
+        # Failure Condition 2: Check if returned entities match searched entity (irrelevant results)
+        incorrect_entities = self.validate_entity_relevance(entity_name, current_data)
+        if incorrect_entities:
+            comparison_result["test_status"] = "FAIL"
+            comparison_result["failure_reasons"].append(f"OpenSearch returned {len(incorrect_entities)} irrelevant entities")
+            comparison_result["incorrect_entities"] = incorrect_entities
+        
+        # Add overall test summary
+        total_missing = sum(len(source_data["missing_records"]) for source_data in comparison_result["sources"].values())
+        comparison_result["test_summary"] = {
+            "total_baseline_records": total_baseline,
+            "total_missing_records": total_missing,
+            "total_relevant_missing_records": len(relevant_missing_records) if relevant_missing_records else 0,
+            "total_common_records": sum(len(source_data["matches"]) for source_data in comparison_result["sources"].values()),
+            "total_new_records": sum(len(source_data["new_records"]) for source_data in comparison_result["sources"].values())
+        }
+        
         return comparison_result
+    
+    def validate_missing_record_relevance(self, entity_name, baseline_data, comparison_result):
+        """
+        Validate if missing records from GDC are actually relevant to the searched entity
+        Returns list of relevant missing records
+        """
+        relevant_missing = []
+        entity_name_lower = entity_name.lower()
+        
+        # Split entity name into key words for matching
+        entity_words = set(word.strip().lower() for word in entity_name_lower.replace(",", " ").split() if len(word.strip()) > 2)
+        
+        # Define common location/generic words that shouldn't count as strong matches
+        generic_words = {'national', 'international', 'global', 'company', 'ltd', 'llc', 'inc', 'corp', 
+                        'limited', 'corporation', 'group', 'holdings', 'the', 'and', 'of', 'for',
+                        'dubai', 'emirates', 'saudi', 'china', 'russia', 'america', 'united', 'states'}
+        
+        for source, source_data in comparison_result["sources"].items():
+            missing_records = source_data.get("missing_records", [])
+            
+            for record in missing_records:
+                full_name = record.get("Full_Name", "").lower()
+                first_name = record.get("First_Name", "").lower()
+                last_name = record.get("Last_Name", "").lower()
+                other_names = record.get("Other_Names", "").lower()
+                
+                # Combine all name fields for checking
+                all_names = f"{full_name} {first_name} {last_name} {other_names}".strip()
+                record_words = set(word.strip().lower() for word in all_names.replace(",", " ").split() if len(word.strip()) > 2)
+                
+                # Check if there's significant overlap between searched entity and missing record
+                if entity_words and record_words:
+                    # Calculate overlap excluding generic words
+                    entity_specific_words = entity_words - generic_words
+                    record_specific_words = record_words - generic_words
+                    
+                    # If no specific words remain, fall back to all words
+                    if not entity_specific_words:
+                        entity_specific_words = entity_words
+                    if not record_specific_words:
+                        record_specific_words = record_words
+                    
+                    specific_overlap = len(entity_specific_words.intersection(record_specific_words))
+                    generic_overlap = len(entity_words.intersection(record_words)) - specific_overlap
+                    
+                    # Calculate weighted overlap (specific words count more)
+                    if entity_specific_words:
+                        specific_ratio = specific_overlap / len(entity_specific_words)
+                    else:
+                        specific_ratio = 0
+                    
+                    # For relevance, we need either:
+                    # 1. High specific word overlap (≥50%), OR  
+                    # 2. Perfect match of ALL entity words (100% including generic)
+                    total_overlap_ratio = len(entity_words.intersection(record_words)) / len(entity_words)
+                    
+                    is_relevant = (specific_ratio >= 0.5) or (total_overlap_ratio >= 0.99)
+                    
+                    if is_relevant:
+                        relevant_missing.append({
+                            "source": source,
+                            "record_id": record.get("ID", ""),
+                            "full_name": record.get("Full_Name", ""),
+                            "first_name": record.get("First_Name", ""),
+                            "last_name": record.get("Last_Name", ""),
+                            "other_names": record.get("Other_Names", ""),
+                            "overlap_ratio": total_overlap_ratio,
+                            "specific_overlap_ratio": specific_ratio,
+                            "searched_entity": entity_name
+                        })
+        
+        return relevant_missing
+    
+    def validate_entity_relevance(self, entity_name, current_data):
+        """
+        Validate if returned entities are relevant to the searched entity
+        Returns list of irrelevant entities
+        """
+        irrelevant_entities = []
+        entity_name_lower = entity_name.lower()
+        
+        # Split entity name into key words for matching
+        entity_words = set(word.strip().lower() for word in entity_name_lower.replace(",", " ").split() if len(word.strip()) > 2)
+        
+        for source, records in current_data.items():
+            for record in records:
+                full_name = record.get("Full_Name", "").lower()
+                first_name = record.get("First_Name", "").lower()
+                last_name = record.get("Last_Name", "").lower()
+                other_names = record.get("Other_Names", "").lower()
+                
+                # Combine all name fields for checking
+                all_names = f"{full_name} {first_name} {last_name} {other_names}".strip()
+                record_words = set(word.strip().lower() for word in all_names.replace(",", " ").split() if len(word.strip()) > 2)
+                
+                # Check if there's significant overlap between searched entity and returned entity
+                if entity_words and record_words:
+                    overlap = len(entity_words.intersection(record_words))
+                    overlap_ratio = overlap / len(entity_words)
+                    
+                    # More sophisticated matching:
+                    # - For single word searches (like "RBI"), be more lenient (20% threshold)
+                    # - For multi-word searches, require higher overlap (40% threshold)
+                    threshold = 0.2 if len(entity_words) == 1 else 0.4
+                    
+                    # Also check reverse overlap (what percentage of record words match entity words)
+                    reverse_overlap_ratio = overlap / len(record_words) if record_words else 0
+                    
+                    # Consider it relevant if either direction has good overlap
+                    is_relevant = (overlap_ratio >= threshold) or (reverse_overlap_ratio >= threshold)
+                    
+                    if not is_relevant:
+                        irrelevant_entities.append({
+                            "source": source,
+                            "record_id": record.get("ID", ""),
+                            "full_name": record.get("Full_Name", ""),
+                            "first_name": record.get("First_Name", ""),
+                            "last_name": record.get("Last_Name", ""),
+                            "other_names": record.get("Other_Names", ""),
+                            "overlap_ratio": overlap_ratio,
+                            "reverse_overlap_ratio": reverse_overlap_ratio,
+                            "searched_entity": entity_name
+                        })
+        
+        return irrelevant_entities
     
     def generate_consolidated_reports(self):
         """
@@ -522,8 +676,8 @@ class ConsolidatedRegressionTest:
         summary_data = []
         
         # Calculate totals by entity type
-        entity_totals = {"E": {"entities": 0, "common": 0, "new": 0, "missing": 0}, 
-                        "P": {"entities": 0, "common": 0, "new": 0, "missing": 0}}
+        entity_totals = {"E": {"entities": 0, "passed": 0, "failed": 0, "common": 0, "new": 0, "missing": 0}, 
+                        "P": {"entities": 0, "passed": 0, "failed": 0, "common": 0, "new": 0, "missing": 0}}
         
         for result in self.all_results:
             entity = result["entity"]
@@ -531,6 +685,13 @@ class ConsolidatedRegressionTest:
             entity_type = entity["type"]
             
             entity_totals[entity_type]["entities"] += 1
+            
+            # Track test status
+            test_status = comparison_result.get("test_status", "UNKNOWN")
+            if test_status == "PASS":
+                entity_totals[entity_type]["passed"] += 1
+            elif test_status == "FAIL":
+                entity_totals[entity_type]["failed"] += 1
             
             for source, data in comparison_result["sources"].items():
                 entity_totals[entity_type]["common"] += data["summary"]["exact_matches"] + data["summary"]["modified_records"]
@@ -543,6 +704,9 @@ class ConsolidatedRegressionTest:
                 summary_data.append({
                     "Entity_Type": "Entities" if entity_type == "E" else "Persons",
                     "Total_Entities_Tested": totals["entities"],
+                    "Tests_Passed": totals["passed"],
+                    "Tests_Failed": totals["failed"],
+                    "Pass_Rate": f"{(totals['passed']/totals['entities']*100):.1f}%" if totals["entities"] > 0 else "0%",
                     "Total_Common_Records": totals["common"],
                     "Total_New_in_OpenSearch": totals["new"],
                     "Total_Missing_from_OpenSearch": totals["missing"],
@@ -550,9 +714,16 @@ class ConsolidatedRegressionTest:
                 })
         
         # Add grand total
+        total_entities = sum(t["entities"] for t in entity_totals.values())
+        total_passed = sum(t["passed"] for t in entity_totals.values())
+        total_failed = sum(t["failed"] for t in entity_totals.values())
+        
         grand_total = {
             "Entity_Type": "GRAND TOTAL",
-            "Total_Entities_Tested": sum(t["entities"] for t in entity_totals.values()),
+            "Total_Entities_Tested": total_entities,
+            "Tests_Passed": total_passed,
+            "Tests_Failed": total_failed,
+            "Pass_Rate": f"{(total_passed/total_entities*100):.1f}%" if total_entities > 0 else "0%",
             "Total_Common_Records": sum(t["common"] for t in entity_totals.values()),
             "Total_New_in_OpenSearch": sum(t["new"] for t in entity_totals.values()),
             "Total_Missing_from_OpenSearch": sum(t["missing"] for t in entity_totals.values()),
@@ -671,14 +842,21 @@ class ConsolidatedRegressionTest:
                 total_new += data["summary"]["new_records"]
                 total_missing += data["summary"]["missing_records"]
             
+            test_status = comparison_result.get("test_status", "UNKNOWN")
+            status_emoji = "✅ PASS" if test_status == "PASS" else "❌ FAIL" if test_status == "FAIL" else "❓ UNKNOWN"
+            
+            # Get failure reasons if any
+            failure_reasons = "; ".join(comparison_result.get("failure_reasons", [])) if test_status == "FAIL" else ""
+            
             entity_summary_data.append({
                 "Entity_Name": entity["name"],
                 "Entity_Type": "Entity" if entity["type"] == "E" else "Person",
+                "Test_Status": status_emoji,
+                "Failure_Reasons": failure_reasons,
                 "Common_Records": total_common,
                 "New_in_OpenSearch": total_new,
                 "Missing_from_OpenSearch": total_missing,
-                "Total_Records": total_common + total_new + total_missing,
-                "Test_Status": "✓ Completed" if total_common + total_new + total_missing > 0 else "⚠ No Data"
+                "Total_Records": total_common + total_new + total_missing
             })
         
         if entity_summary_data:
@@ -781,6 +959,10 @@ class ConsolidatedRegressionTest:
         .badge-common {{ background-color: #28a745; color: white; }}
         .badge-new {{ background-color: #007bff; color: white; }}
         .badge-missing {{ background-color: #dc3545; color: white; }}
+        .test-pass {{ background-color: #d4edda; color: #155724; }}
+        .test-fail {{ background-color: #f8d7da; color: #721c24; }}
+        .failure-reasons {{ background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; margin: 10px 0; }}
+        .irrelevant-entities {{ background-color: #e2e3e5; border-left: 4px solid #6c757d; padding: 10px; margin: 10px 0; }}
         .toc {{ background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; }}
         .toc ul {{ list-style-type: none; padding-left: 0; }}
         .toc li {{ margin: 5px 0; }}
@@ -865,13 +1047,76 @@ class ConsolidatedRegressionTest:
                 entity_new += data["summary"]["new_records"]
                 entity_missing += data["summary"]["missing_records"]
             
+            test_status = comparison_result.get("test_status", "UNKNOWN")
+            status_class = "test-pass" if test_status == "PASS" else "test-fail"
+            status_emoji = "✅" if test_status == "PASS" else "❌"
+            
             html_content += f"""
     <div class="entity-section" id="entity_{i}">
-        <div class="entity-header">
-            {self.html_escape(entity["name"])} ({entity_type})
+        <div class="entity-header {status_class}">
+            {self.html_escape(entity["name"])} ({entity_type}) - {status_emoji} {test_status}
         </div>
         <div class="entity-content">
             <p><strong>Summary:</strong> {entity_common} Common, {entity_new} New in OpenSearch, {entity_missing} Missing from OpenSearch</p>
+"""
+            
+            # Add failure reasons if test failed
+            if test_status == "FAIL" and comparison_result.get("failure_reasons"):
+                html_content += """
+            <div class="failure-reasons">
+                <h4>❌ Test Failure Reasons:</h4>
+                <ul>
+"""
+                for reason in comparison_result["failure_reasons"]:
+                    html_content += f"                    <li>{self.html_escape(reason)}</li>\n"
+                html_content += """
+                </ul>
+            </div>
+"""
+            
+            # Add relevant missing records if any
+            if comparison_result.get("relevant_missing_records"):
+                html_content += """
+            <div class="irrelevant-entities">
+                <h4>🔍 Relevant Missing Records:</h4>
+                <table>
+                    <tr><th>Source</th><th>ID</th><th>Name</th><th>Match %</th></tr>
+"""
+                for missing_info in comparison_result["relevant_missing_records"][:10]:  # Show first 10
+                    html_content += f"""
+                    <tr>
+                        <td>{self.html_escape(missing_info['source'])}</td>
+                        <td>{self.html_escape(missing_info['record_id'])}</td>
+                        <td>{self.html_escape(missing_info['full_name'])}</td>
+                        <td>{missing_info['overlap_ratio']:.1%}</td>
+                    </tr>
+"""
+                html_content += """
+                </table>
+            </div>
+"""
+
+            # Add irrelevant entities if any
+            if comparison_result.get("incorrect_entities"):
+                html_content += """
+            <div class="irrelevant-entities">
+                <h4>⚠️ Irrelevant Entities Found:</h4>
+                <table>
+                    <tr><th>Source</th><th>ID</th><th>Name</th><th>Forward Match %</th><th>Reverse Match %</th></tr>
+"""
+                for entity_info in comparison_result["incorrect_entities"][:10]:  # Show first 10
+                    html_content += f"""
+                    <tr>
+                        <td>{self.html_escape(entity_info['source'])}</td>
+                        <td>{self.html_escape(entity_info['record_id'])}</td>
+                        <td>{self.html_escape(entity_info['full_name'])}</td>
+                        <td>{entity_info['overlap_ratio']:.1%}</td>
+                        <td>{entity_info.get('reverse_overlap_ratio', 0):.1%}</td>
+                    </tr>
+"""
+                html_content += """
+                </table>
+            </div>
 """
             
             # Add detailed sections for each source
@@ -960,7 +1205,10 @@ class ConsolidatedRegressionTest:
     def print_entity_summary(self, entity, comparison_result):
         """Print summary to console for a single entity"""
         
-        print(f"\n[{entity['name']}] Processing completed")
+        test_status = comparison_result.get("test_status", "UNKNOWN")
+        status_emoji = "✅" if test_status == "PASS" else "❌"
+        
+        print(f"\n[{entity['name']}] Processing completed - {status_emoji} {test_status}")
         
         total_common = 0
         total_new = 0
@@ -973,6 +1221,25 @@ class ConsolidatedRegressionTest:
                 total_missing += data["summary"]["missing_records"]
         
         print(f"  Summary: {total_common} Common, {total_new} New, {total_missing} Missing")
+        
+        # Print failure reasons if test failed
+        if test_status == "FAIL" and comparison_result.get("failure_reasons"):
+            print(f"  ❌ Failure Reasons:")
+            for reason in comparison_result["failure_reasons"]:
+                print(f"    • {reason}")
+        
+        # Print relevant missing records if any
+        if comparison_result.get("relevant_missing_records"):
+            print(f"  🔍 Relevant Missing Records:")
+            for missing_info in comparison_result["relevant_missing_records"][:3]:  # Show first 3
+                print(f"    • {missing_info['full_name']} (ID: {missing_info['record_id']}) - {missing_info['overlap_ratio']:.1%} match")
+        
+        # Print incorrect entities if any
+        if comparison_result.get("incorrect_entities"):
+            print(f"  ⚠️  Irrelevant Entities Found:")
+            for entity_info in comparison_result["incorrect_entities"][:3]:  # Show first 3
+                match_info = f"{entity_info['overlap_ratio']:.1%}↔{entity_info.get('reverse_overlap_ratio', 0):.1%}"
+                print(f"    • {entity_info['full_name']} (ID: {entity_info['record_id']}) - {match_info} match")
     
     def run_all_tests(self):
         """

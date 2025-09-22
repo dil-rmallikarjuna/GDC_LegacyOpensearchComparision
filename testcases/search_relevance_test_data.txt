@@ -1,0 +1,21 @@
+Search Term	Entity Type	Expected Result Type	Notes
+Mirage AirCraft Services	E	exact_match	Should find "Mirage Air Craft Services" despite spacing
+Sigma Airline Company	E	exact_match	Should find "Sigma Airlines Company" despite missing 's'
+Emirates National Bank of Dubai	E	abbreviation_match	Should find "Emirates NBD" abbreviation
+Emirates NBD	E	full_name_match	Should find "Emirates National Bank of Dubai" full name
+Wireless Communications	E	specific_match	Should return specific companies not overly broad results
+BroadCom Wireless Communications Corporation	E	exact_match	Should find exact company name
+National Bank of Dubai	E	exact_match	Should find exact bank name
+RBI	E	relevant_only	Should return Reserve Bank of India related entities only
+AGILENT TECHNOLOGIES	E	exact_match	Should find all Agilent Technologies entities
+narendra modi	P	exact_match	Should find Narendra Damodardas Modi
+omar hammami	P	exact_match	Should find Omar Hammami records
+zhang dong liang	P	transliteration_match	Should handle Chinese name variations
+abe shinzo	P	transliteration_match	Should handle Japanese name variations
+Apple Inc	E	exact_match	Should find Apple Inc company
+Microsoft Corporation	E	exact_match	Should find Microsoft Corporation
+Tesla Motors	E	name_variation	Should find Tesla Inc or Tesla Motors
+SpaceX	E	exact_match	Should find Space Exploration Technologies
+Amazon	E	broad_but_relevant	Should find Amazon companies but filter irrelevant ones
+Google	E	broad_but_relevant	Should find Google/Alphabet but filter unrelated
+Facebook	E	name_variation	Should find Meta/Facebook variations
