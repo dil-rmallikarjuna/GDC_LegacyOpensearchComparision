@@ -8,7 +8,7 @@
     "max_retries": 3,
     "retry_delay": 1.0,
     "batch_size": 10,
-    "schemas": ["sanctions", "watch", "pep", "mex", "col", "icij"],
+    "schemas": ["col", "rights", "mex", "watch", "soe", "pep", "sanction", "icij"],
     "search_types": ["keyword", "phonetic", "similarity"],
     "limit": 100
   },

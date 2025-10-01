@@ -30,7 +30,7 @@ class Config:
             "max_retries": int(os.getenv("MAX_RETRIES", "3")),
             "retry_delay": float(os.getenv("RETRY_DELAY", "1.0")),
             "batch_size": int(os.getenv("BATCH_SIZE", "10")),
-            "schemas": ["sanctions", "watch", "pep", "mex", "col", "icij"],
+            "schemas": ["col", "rights", "mex", "watch", "soe", "pep", "sanction", "icij"],
             "search_types": ["keyword", "phonetic", "similarity"],
             "limit": int(os.getenv("SEARCH_LIMIT", "100"))
         }
@@ -113,10 +113,13 @@ class Config:
         return headers
     
     def get_search_payload(self, query: str, entity_type: str) -> Dict[str, Any]:
-        """Generate search payload for API request"""
+        """Generate search payload for API request with all schemas for both Person and Entity"""
+        # Fetch all schemas for both Person and Entity types
+        schemas = ["col", "rights", "mex", "watch", "soe", "pep", "sanction", "icij"]
+        
         return {
             "query": query,
-            "schemas": self.test_config["schemas"],
+            "schemas": schemas,
             "limit": self.test_config["limit"],
             "search_types": self.test_config["search_types"]
         }

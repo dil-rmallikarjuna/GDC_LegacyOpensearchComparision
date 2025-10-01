@@ -13,10 +13,42 @@ import os
 import hashlib
 import sys
 import time
+import re
 
 # Add parent directory to path to import config
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import config
+
+def clean_json_string(json_str):
+    """
+    Clean malformed JSON string by fixing common issues
+    """
+    if not isinstance(json_str, str):
+        return json_str
+    
+    try:
+        # Fix invalid Unicode escapes
+        json_str = re.sub(r'\\u([0-9a-fA-F]{4})', lambda m: chr(int(m.group(1), 16)), json_str)
+        
+        # Fix unterminated strings
+        json_str = re.sub(r'"[^"]*$', '"', json_str)
+        
+        # Fix missing closing braces
+        open_braces = json_str.count('{')
+        close_braces = json_str.count('}')
+        if open_braces > close_braces:
+            json_str += '}' * (open_braces - close_braces)
+        
+        # Fix missing closing brackets
+        open_brackets = json_str.count('[')
+        close_brackets = json_str.count(']')
+        if open_brackets > close_brackets:
+            json_str += ']' * (open_brackets - close_brackets)
+        
+        return json_str
+    except Exception as e:
+        print(f"Error cleaning JSON string: {e}")
+        return json_str
 
 class ExcelDrivenRegressionTest:
     def __init__(self, excel_path=None):
@@ -33,6 +65,9 @@ class ExcelDrivenRegressionTest:
         
         # Results storage for unified comparison
         self.unified_comparison_data = []
+        
+        # Track entities with corrupted JSON
+        self.skipped_entities = []
         
         # Ensure results directory exists
         os.makedirs(config.results_directory, exist_ok=True)
@@ -60,8 +95,16 @@ class ExcelDrivenRegressionTest:
                 if entity["current_gdc_response"] and entity["current_gdc_response"] != "No Hits":
                     try:
                         if isinstance(entity["current_gdc_response"], str):
-                            gdc_data = json.loads(entity["current_gdc_response"])
-                            entity["baseline_data"] = self.parse_gdc_response(gdc_data)
+                            # Check if JSON looks corrupted (common patterns)
+                            if any(pattern in entity["current_gdc_response"] for pattern in [
+                                "Invalid \\uXXXX escape", "Unterminated string", "Expecting value"
+                            ]):
+                                print(f"Skipping {entity['name']} - corrupted JSON detected")
+                                self.skipped_entities.append(entity['name'])
+                                entity["baseline_data"] = {}
+                            else:
+                                gdc_data = json.loads(entity["current_gdc_response"])
+                                entity["baseline_data"] = self.parse_gdc_response(gdc_data, entity["name"])
                         else:
                             entity["baseline_data"] = {}
                     except (json.JSONDecodeError, Exception) as e:
@@ -79,25 +122,36 @@ class ExcelDrivenRegressionTest:
             print(f"Error loading Excel file: {e}")
             return []
     
-    def parse_gdc_response(self, gdc_data):
+    def parse_gdc_response(self, gdc_data, entity_name=""):
         """
-        Parse GDC response JSON to extract baseline data
+        Parse GDC response JSON to extract baseline data with robust error handling
         Excludes OFAC data as requested
         """
         baseline_data = {
-            "watch": [],
-            "icij": [],
-            "mex": [],
+            "col": [],
             "rights": [],
+            "mex": [],
+            "watch": [],
+            "soe": [],
             "pep": [],
             "sanction": [],
-            "soe": [],
-            "col": [],
+            "icij": [],
             "media": []
             # Note: OFAC excluded as requested
         }
         
         try:
+            # Handle malformed JSON gracefully with multiple fallback strategies
+            if isinstance(gdc_data, str):
+                try:
+                    # First attempt: Standard JSON parsing
+                    gdc_data = json.loads(gdc_data)
+                except json.JSONDecodeError as e:
+                    print(f"JSON parsing error for {entity_name}: {e}")
+                    # Skip entities with malformed JSON completely
+                    print(f"Skipping {entity_name} due to corrupted JSON data")
+                    return baseline_data
+            
             # Navigate through the GDC response structure
             if "Args" in gdc_data and len(gdc_data["Args"]) > 0:
                 args = gdc_data["Args"][0]
@@ -159,7 +213,8 @@ class ExcelDrivenRegressionTest:
                                 baseline_data[source.lower()].append(normalized_record)
             
         except Exception as e:
-            print(f"Error parsing GDC response structure: {e}")
+            print(f"Error parsing GDC response for {entity_name}: {e}")
+            # Continue processing other entities even if one fails
         
         return baseline_data
     
@@ -170,20 +225,8 @@ class ExcelDrivenRegressionTest:
         max_retries = config.test_config["max_retries"]
         retry_delay = config.test_config["retry_delay"]
         
-        # Determine schemas based on entity type
-        if entity_type.upper() == "E":
-            # For Entity (type = 'E'):
-            schemas = ["sanctions", "watch", "soe", "rights", "mex", "col", "icij"]
-        else:  # Person (type = 'P')
-            schemas = ["sanctions", "watch", "pep", "mex", "col", "icij"]
-        
-        # Generate payload using config
-        payload = {
-            "query": entity_name,
-            "schemas": schemas,
-            "limit": config.test_config["limit"],
-            "search_types": config.test_config["search_types"]
-        }
+        # Generate payload using config with correct schemas based on entity type
+        payload = config.get_search_payload(entity_name, entity_type)
         
         # Get headers with authentication
         headers = config.get_api_headers()
@@ -219,14 +262,14 @@ class ExcelDrivenRegressionTest:
         
         # Return empty data structure if all API calls fail
         return {
-            "watch": [],
-            "icij": [],
-            "mex": [],
+            "col": [],
             "rights": [],
+            "mex": [],
+            "watch": [],
+            "soe": [],
             "pep": [],
             "sanction": [],
-            "soe": [],
-            "col": [],
+            "icij": [],
             "media": [],
             "ofac": []
         }
@@ -241,14 +284,14 @@ class ExcelDrivenRegressionTest:
             
             # Initialize transformed data structure (excluding OFAC as requested)
             transformed_data = {
-                "watch": [],
-                "icij": [],
-                "mex": [],
+                "col": [],
                 "rights": [],
+                "mex": [],
+                "watch": [],
+                "soe": [],
                 "pep": [],
                 "sanction": [],
-                "soe": [],
-                "col": [],
+                "icij": [],
                 "media": []
             }
             
@@ -656,6 +699,14 @@ class ExcelDrivenRegressionTest:
             print(f"  Matched records: {matched_records}")
             print(f"  OpenSearch-only records: {total_opensearch_records - matched_records}")
             print(f"  Legacy-only records: {total_legacy_records - matched_records}")
+            
+            # Report skipped entities due to corrupted JSON
+            if self.skipped_entities:
+                print(f"\n⚠️  Skipped Entities (Corrupted JSON): {len(self.skipped_entities)}")
+                for entity in self.skipped_entities[:10]:  # Show first 10
+                    print(f"    - {entity}")
+                if len(self.skipped_entities) > 10:
+                    print(f"    ... and {len(self.skipped_entities) - 10} more")
             
             return excel_filename, html_filename
         else:
