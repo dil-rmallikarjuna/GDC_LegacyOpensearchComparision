@@ -1,0 +1,25 @@
+{
+  "api": {
+    "url": "https://15krnwu233.execute-api.us-east-1.amazonaws.com/prod/search",
+    "api_key": "YOUR_API_KEY_HERE",
+    "timeout": 30
+  },
+  "test": {
+    "max_retries": 3,
+    "retry_delay": 1.0,
+    "batch_size": 10,
+    "schemas": ["sanctions", "watch", "pep", "mex", "col", "icij"],
+    "search_types": ["keyword", "phonetic", "similarity"],
+    "limit": 100
+  },
+  "report": {
+    "exclude_ofac": true,
+    "include_html": true,
+    "include_excel": true,
+    "status_colors": {
+      "present_in_both": "#d4edda",
+      "opensearch_only": "#cce5ff",
+      "legacy_only": "#fff3cd"
+    }
+  }
+}
