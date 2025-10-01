@@ -2,6 +2,7 @@
 """
 Excel-Driven Regression Testing Framework
 Reads entity data from Excel file and performs regression testing for each entity.
+Generates a single unified comparison report between OpenSearch and GDC legacy data.
 """
 
 import requests
@@ -10,20 +11,31 @@ import pandas as pd
 from datetime import datetime
 import os
 import hashlib
+import sys
+import time
+
+# Add parent directory to path to import config
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config import config
 
 class ExcelDrivenRegressionTest:
-    def __init__(self, excel_path="/Users/rmallikarjuna/Documents/GDC automation test/GDC Old System Result.xlsx"):
-        self.excel_path = excel_path
+    def __init__(self, excel_path=None):
+        # Load configuration from parent directory
+        config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config.json")
+        config.load_from_file(config_path)
         
-        # API Configuration - Your actual AWS API Gateway endpoint
-        self.api_config = {
-            "url": "https://15krnwu233.execute-api.us-east-1.amazonaws.com/prod/search",
-            "api_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJyZWFkLWNsaWVudCIsInJvbGUiOiJyZWFkIiwicGVybWlzc2lvbnMiOlsicmVhZCJdLCJleHAiOjE3NTc2NTYwMjAsImlhdCI6MTc1NzY1MjQyMCwiaXNzIjoiZ2RjLXNlYXJjaC1pZGVudGl0eS1zZXJ2aWNlIn0.71UeA_p0PQZBZymTAWshk9nJV0afSt_jM5fwW3QgtUo",
-            "timeout": 30
-        }
+        # Use provided path or config default
+        self.excel_path = excel_path or config.excel_file_path
+        
+        # Validate configuration
+        if not config.validate():
+            raise ValueError("Configuration validation failed. Please check your settings.")
+        
+        # Results storage for unified comparison
+        self.unified_comparison_data = []
         
         # Ensure results directory exists
-        os.makedirs("results", exist_ok=True)
+        os.makedirs(config.results_directory, exist_ok=True)
     
     def load_entities_from_excel(self):
         """
@@ -70,6 +82,7 @@ class ExcelDrivenRegressionTest:
     def parse_gdc_response(self, gdc_data):
         """
         Parse GDC response JSON to extract baseline data
+        Excludes OFAC data as requested
         """
         baseline_data = {
             "watch": [],
@@ -80,8 +93,8 @@ class ExcelDrivenRegressionTest:
             "sanction": [],
             "soe": [],
             "col": [],
-            "media": [],
-            "ofac": []
+            "media": []
+            # Note: OFAC excluded as requested
         }
         
         try:
@@ -93,19 +106,56 @@ class ExcelDrivenRegressionTest:
                     
                     # Extract data from each source
                     for source, records in preview.items():
+                        # Skip OFAC data as requested
+                        if source.lower() == "ofac":
+                            continue
+                            
                         if source.lower() in baseline_data and isinstance(records, list):
                             for record in records:
-                                # Normalize the record structure
-                                normalized_record = {
-                                    "recid": record.get("recid", 0),
-                                    "ID": record.get("ID", ""),
-                                    "First_Name": record.get("First_Name", ""),
-                                    "Last_Name": record.get("Last_Name", ""),
-                                    "Full_Name": record.get("Full_Name", ""),
-                                    "Other_Names": record.get("Other_Names", ""),
-                                    "AltScript": record.get("AltScript", ""),
-                                    "RecType": record.get("RecType", "")
-                                }
+                                # Handle ICIJ differently - it has different schema
+                                if source.lower() == "icij":
+                                    # Construct full name if not present
+                                    full_name = record.get("Full_Name", "")
+                                    if not full_name:
+                                        first_name = record.get("First_Name", "")
+                                        last_name = record.get("Last_Name", "")
+                                        if first_name or last_name:
+                                            full_name = f"{first_name} {last_name}".strip()
+                                        else:
+                                            full_name = record.get("Entity_Name", "")
+                                    
+                                    normalized_record = {
+                                        "recid": record.get("recid", 0),
+                                        "ID": record.get("ID", ""),
+                                        "First_Name": record.get("First_Name", ""),
+                                        "Last_Name": record.get("Last_Name", ""),
+                                        "Full_Name": full_name,
+                                        "Other_Names": record.get("Other_Names", ""),
+                                        "AltScript": record.get("AltScript", ""),
+                                        "RecType": "ICIJ",  # Special handling for ICIJ
+                                        "Entity_Name": record.get("Entity_Name", ""),  # ICIJ specific field
+                                        "Entity_Type": record.get("Entity_Type", "")   # ICIJ specific field
+                                    }
+                                else:
+                                    # Construct full name if not present
+                                    full_name = record.get("Full_Name", "")
+                                    if not full_name:
+                                        first_name = record.get("First_Name", "")
+                                        last_name = record.get("Last_Name", "")
+                                        if first_name or last_name:
+                                            full_name = f"{first_name} {last_name}".strip()
+                                    
+                                    # Standard record structure for other sources
+                                    normalized_record = {
+                                        "recid": record.get("recid", 0),
+                                        "ID": record.get("ID", ""),
+                                        "First_Name": record.get("First_Name", ""),
+                                        "Last_Name": record.get("Last_Name", ""),
+                                        "Full_Name": full_name,
+                                        "Other_Names": record.get("Other_Names", ""),
+                                        "AltScript": record.get("AltScript", ""),
+                                        "RecType": record.get("RecType", "")
+                                    }
                                 baseline_data[source.lower()].append(normalized_record)
             
         except Exception as e:
@@ -115,69 +165,71 @@ class ExcelDrivenRegressionTest:
     
     def fetch_current_data(self, entity_name, entity_type):
         """
-        Fetch current data from OpenSearch API
+        Fetch current data from OpenSearch API with retry logic
         """
+        max_retries = config.test_config["max_retries"]
+        retry_delay = config.test_config["retry_delay"]
         
-        # Use configured API settings
-        api_url = self.api_config["url"]
-        api_key = self.api_config["api_key"]
+        # Determine schemas based on entity type
+        if entity_type.upper() == "E":
+            # For Entity (type = 'E'):
+            schemas = ["sanctions", "watch", "soe", "rights", "mex", "col", "icij"]
+        else:  # Person (type = 'P')
+            schemas = ["sanctions", "watch", "pep", "mex", "col", "icij"]
         
-        # Determine RecType based on entity type
-        rec_type = "E" if entity_type == "E" else "P"
-        
-        # Payload for OpenSearch API call
+        # Generate payload using config
         payload = {
             "query": entity_name,
-            "schemas": ["col", "rights", "mex", "watch", "soe", "pep", "sanctions"],
-            "limit": 100,
-            "search_types": ["keyword", "phonetic", "similarity"]
+            "schemas": schemas,
+            "limit": config.test_config["limit"],
+            "search_types": config.test_config["search_types"]
         }
         
-        # Note: RecType filtering will be handled in post-processing if needed
-        # The API doesn't seem to support RecType parameter directly
+        # Get headers with authentication
+        headers = config.get_api_headers()
         
-        headers = {
-            "Content-Type": "application/json"
+        for attempt in range(max_retries):
+            try:
+                print(f"Calling OpenSearch API for {entity_name} (Type: {entity_type})... (Attempt {attempt + 1}/{max_retries})")
+                print(f"Payload: {payload}")
+                
+                response = requests.post(
+                    config.api_config["url"],
+                    json=payload,
+                    headers=headers,
+                    timeout=config.api_config["timeout"]
+                )
+                response.raise_for_status()
+                
+                api_result = response.json()
+                print(f"API Response received successfully")
+                
+                # Transform API response to match our expected format
+                return self.transform_opensearch_response(api_result)
+                
+            except requests.exceptions.RequestException as e:
+                print(f"Error calling OpenSearch API (Attempt {attempt + 1}): {e}")
+                if attempt < max_retries - 1:
+                    print(f"Retrying in {retry_delay} seconds...")
+                    time.sleep(retry_delay)
+                    continue
+                else:
+                    print("All retry attempts failed. Returning empty data...")
+                    break
+        
+        # Return empty data structure if all API calls fail
+        return {
+            "watch": [],
+            "icij": [],
+            "mex": [],
+            "rights": [],
+            "pep": [],
+            "sanction": [],
+            "soe": [],
+            "col": [],
+            "media": [],
+            "ofac": []
         }
-        
-        # Add authorization header if API key is provided
-        if api_key:
-            headers["Authorization"] = f"Bearer {api_key}"
-        
-        try:
-            print(f"Calling OpenSearch API for {entity_name} (Type: {entity_type})...")
-            print(f"Payload: {payload}")
-            
-            response = requests.post(api_url, json=payload, headers=headers, timeout=self.api_config["timeout"])
-            response.raise_for_status()
-            
-            api_result = response.json()
-            print(f"API Response received successfully")
-            
-            # Transform API response to match our expected format
-            return self.transform_opensearch_response(api_result)
-            
-        except requests.exceptions.RequestException as e:
-            print(f"Error calling OpenSearch API: {e}")
-            print("Returning empty data...")
-            
-            # Return empty data structure if API call fails
-            return {
-                "watch": [],
-                "icij": [],
-                "mex": [],
-                "rights": [],
-                "pep": [],
-                "sanction": [],
-                "soe": [],
-                "col": [],
-                "media": [],
-                "ofac": []
-            }
-        
-        except Exception as e:
-            print(f"Error processing API response: {e}")
-            return None
     
     def transform_opensearch_response(self, api_response):
         """
@@ -187,7 +239,7 @@ class ExcelDrivenRegressionTest:
         try:
             print(f"Raw API response keys: {list(api_response.keys()) if isinstance(api_response, dict) else type(api_response)}")
             
-            # Initialize transformed data structure
+            # Initialize transformed data structure (excluding OFAC as requested)
             transformed_data = {
                 "watch": [],
                 "icij": [],
@@ -197,8 +249,7 @@ class ExcelDrivenRegressionTest:
                 "sanction": [],
                 "soe": [],
                 "col": [],
-                "media": [],
-                "ofac": []
+                "media": []
             }
             
             # Check if API response has results
@@ -272,16 +323,31 @@ class ExcelDrivenRegressionTest:
                 if first_name or last_name:
                     full_name = f"{first_name} {last_name}".strip()
             
-            return {
-                "recid": recid,
-                "ID": source_data.get("ID", ""),
-                "First_Name": source_data.get("First_Name", ""),
-                "Last_Name": source_data.get("Last_Name", ""),
-                "Full_Name": full_name,
-                "Other_Names": source_data.get("Other_Names", source_data.get("otherNames", "")),
-                "AltScript": source_data.get("AltScript", ""),
-                "RecType": source_data.get("RecType", "")
-            }
+            # Handle ICIJ differently - it has different schema
+            if source_data.get("RecType") == "ICIJ" or "icij" in str(source_data.get("_index", "")).lower():
+                return {
+                    "recid": recid,
+                    "ID": source_data.get("ID", ""),
+                    "First_Name": source_data.get("First_Name", ""),
+                    "Last_Name": source_data.get("Last_Name", ""),
+                    "Full_Name": full_name,
+                    "Other_Names": source_data.get("Other_Names", source_data.get("otherNames", "")),
+                    "AltScript": source_data.get("AltScript", ""),
+                    "RecType": "ICIJ",  # Special handling for ICIJ
+                    "Entity_Name": source_data.get("Entity_Name", ""),  # ICIJ specific field
+                    "Entity_Type": source_data.get("Entity_Type", "")   # ICIJ specific field
+                }
+            else:
+                return {
+                    "recid": recid,
+                    "ID": source_data.get("ID", ""),
+                    "First_Name": source_data.get("First_Name", ""),
+                    "Last_Name": source_data.get("Last_Name", ""),
+                    "Full_Name": full_name,
+                    "Other_Names": source_data.get("Other_Names", source_data.get("otherNames", "")),
+                    "AltScript": source_data.get("AltScript", ""),
+                    "RecType": source_data.get("RecType", "")
+                }
             
         except Exception as e:
             print(f"Error normalizing record: {e}")
@@ -479,6 +545,422 @@ class ExcelDrivenRegressionTest:
         
         return comparison_result
     
+    def generate_unified_comparison_report(self):
+        """
+        Generate unified comparison reports (Excel and HTML) with the specified format:
+        Test Key, Search Term, Type, OpenSearch Name, OpenSearch ID, OpenSearch Schema, Legacy Name, Legacy ID, Legacy Schema
+        """
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Create unified comparison data
+        unified_data = []
+        
+        for comparison_data in self.unified_comparison_data:
+            search_term = comparison_data['search_term']
+            entity_type = comparison_data['entity_type']
+            test_key = search_term  # Remove _E and _P suffixes
+            type_label = "Person" if entity_type == "P" else "Entity"
+            
+            # Get OpenSearch results
+            opensearch_results = comparison_data.get('opensearch_results', {})
+            # Get Legacy GDC results
+            legacy_results = comparison_data.get('legacy_results', {})
+            
+            # Process each source
+            all_sources = set(opensearch_results.keys()) | set(legacy_results.keys())
+            
+            for source in all_sources:
+                opensearch_records = opensearch_results.get(source, [])
+                legacy_records = legacy_results.get(source, [])
+                
+                # Create lookup for matching records
+                legacy_by_id = {record.get("ID", ""): record for record in legacy_records}
+                
+                # Process OpenSearch records
+                for opensearch_record in opensearch_records:
+                    opensearch_id = opensearch_record.get("ID", "")
+                    opensearch_name = opensearch_record.get("Full_Name", "") or opensearch_record.get("Entity_Name", "")
+                    opensearch_schema = source.upper()
+                    
+                    # Find matching legacy record
+                    legacy_record = legacy_by_id.get(opensearch_id)
+                    if legacy_record:
+                        legacy_name = legacy_record.get("Full_Name", "") or legacy_record.get("Entity_Name", "")
+                        legacy_id = legacy_record.get("ID", "")
+                        legacy_schema = source.upper()
+                    else:
+                        legacy_name = ""
+                        legacy_id = ""
+                        legacy_schema = ""
+                    
+                    unified_data.append({
+                        "Test Key": test_key,
+                        "Search Term": search_term,
+                        "Type": type_label,
+                        "OpenSearch Name": opensearch_name,
+                        "OpenSearch ID": opensearch_id,
+                        "OpenSearch Schema": opensearch_schema,
+                        "Legacy Name": legacy_name,
+                        "Legacy ID": legacy_id,
+                        "Legacy Schema": legacy_schema
+                    })
+                
+                # Process legacy-only records (not found in OpenSearch)
+                opensearch_ids = {record.get("ID", "") for record in opensearch_records}
+                for legacy_record in legacy_records:
+                    legacy_id = legacy_record.get("ID", "")
+                    if legacy_id not in opensearch_ids:
+                        legacy_name = legacy_record.get("Full_Name", "") or legacy_record.get("Entity_Name", "")
+                        legacy_schema = source.upper()
+                        
+                        unified_data.append({
+                            "Test Key": test_key,
+                            "Search Term": search_term,
+                            "Type": type_label,
+                            "OpenSearch Name": "",
+                            "OpenSearch ID": "",
+                            "OpenSearch Schema": "",
+                            "Legacy Name": legacy_name,
+                            "Legacy ID": legacy_id,
+                            "Legacy Schema": legacy_schema
+                        })
+        
+        # Create DataFrame and save to Excel
+        if unified_data:
+            df = pd.DataFrame(unified_data)
+            
+            # Sort by Test Key, then by OpenSearch Schema, then by OpenSearch ID
+            df = df.sort_values(['Test Key', 'OpenSearch Schema', 'OpenSearch ID'])
+            
+            # Save to Excel
+            excel_filename = os.path.join(config.results_directory, f"unified_opensearch_vs_legacy_comparison_{timestamp}.xlsx")
+            df.to_excel(excel_filename, index=False, sheet_name='Unified Comparison')
+            
+            # Generate HTML report
+            html_filename = os.path.join(config.results_directory, f"unified_opensearch_vs_legacy_comparison_{timestamp}.html")
+            self.generate_html_report(df, html_filename)
+            
+            print(f"\n✅ Unified comparison reports generated:")
+            print(f"  Excel: {excel_filename}")
+            print(f"  HTML: {html_filename}")
+            print(f"📊 Total comparison records: {len(unified_data)}")
+            
+            # Print summary statistics
+            total_opensearch_records = len([r for r in unified_data if r['OpenSearch ID']])
+            total_legacy_records = len([r for r in unified_data if r['Legacy ID']])
+            matched_records = len([r for r in unified_data if r['OpenSearch ID'] and r['Legacy ID']])
+            
+            print(f"📈 Summary Statistics:")
+            print(f"  OpenSearch records: {total_opensearch_records}")
+            print(f"  Legacy GDC records: {total_legacy_records}")
+            print(f"  Matched records: {matched_records}")
+            print(f"  OpenSearch-only records: {total_opensearch_records - matched_records}")
+            print(f"  Legacy-only records: {total_legacy_records - matched_records}")
+            
+            return excel_filename, html_filename
+        else:
+            print("❌ No comparison data available to generate report")
+            return None, None
+    
+    def generate_html_report(self, df, filename):
+        """
+        Generate HTML report from DataFrame
+        """
+        try:
+            # Create HTML content
+            html_content = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified OpenSearch vs Legacy GDC Comparison Report</title>
+    <style>
+        body {{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }}
+        .container {{
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }}
+        .header {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }}
+        .header h1 {{
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }}
+        .header p {{
+            margin: 10px 0 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }}
+        .summary {{
+            padding: 20px 30px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }}
+        .summary h2 {{
+            margin: 0 0 15px 0;
+            color: #495057;
+            font-size: 1.5em;
+        }}
+        .stats {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }}
+        .stat-card {{
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }}
+        .stat-number {{
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }}
+        .stat-label {{
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }}
+        .table-container {{
+            padding: 30px;
+            overflow-x: auto;
+        }}
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }}
+        th {{
+            background-color: #495057;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }}
+        td {{
+            padding: 10px 8px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+        }}
+        tr:nth-child(even) {{
+            background-color: #f8f9fa;
+        }}
+        tr:hover {{
+            background-color: #e3f2fd;
+        }}
+        .type-person {{
+            background-color: #e8f5e8;
+            color: #2e7d32;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }}
+        .type-entity {{
+            background-color: #e3f2fd;
+            color: #1565c0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }}
+        .schema-badge {{
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 500;
+            margin: 1px;
+        }}
+        .schema-watch {{ background-color: #fff3cd; color: #856404; }}
+        .schema-pep {{ background-color: #d1ecf1; color: #0c5460; }}
+        .schema-sanction {{ background-color: #f8d7da; color: #721c24; }}
+        .schema-icij {{ background-color: #d4edda; color: #155724; }}
+        .schema-mex {{ background-color: #e2e3e5; color: #383d41; }}
+        .schema-rights {{ background-color: #fce4ec; color: #c2185b; }}
+        .schema-soe {{ background-color: #f3e5f5; color: #7b1fa2; }}
+        .schema-col {{ background-color: #fff8e1; color: #f57f17; }}
+        .schema-media {{ background-color: #e0f2f1; color: #00695c; }}
+        .empty-cell {{
+            color: #6c757d;
+            font-style: italic;
+        }}
+        .status-badge {{
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-align: center;
+            min-width: 80px;
+        }}
+        .status-both {{
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }}
+        .status-opensearch-only {{
+            background-color: #cce5ff;
+            color: #004085;
+            border: 1px solid #b3d7ff;
+        }}
+        .status-legacy-only {{
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }}
+        .footer {{
+            padding: 20px 30px;
+            background-color: #f8f9fa;
+            text-align: center;
+            color: #6c757d;
+            border-top: 1px solid #dee2e6;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Unified OpenSearch vs Legacy GDC Comparison</h1>
+            <p>Comprehensive Analysis Report - Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</p>
+        </div>
+        
+        <div class="summary">
+            <h2>Summary Statistics</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number">{len(df)}</div>
+                    <div class="stat-label">Total Records</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{len(df[df['OpenSearch ID'] != ''])}</div>
+                    <div class="stat-label">OpenSearch Records</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{len(df[df['Legacy ID'] != ''])}</div>
+                    <div class="stat-label">Legacy GDC Records</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{len(df[(df['OpenSearch ID'] != '') & (df['Legacy ID'] != '')])}</div>
+                    <div class="stat-label">Matched Records</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{len(df[(df['OpenSearch ID'] != '') & (df['Legacy ID'] == '')])}</div>
+                    <div class="stat-label">OpenSearch Only</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{len(df[(df['OpenSearch ID'] == '') & (df['Legacy ID'] != '')])}</div>
+                    <div class="stat-label">Legacy Only</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test Key</th>
+                        <th>Search Term</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>OpenSearch Name</th>
+                        <th>OpenSearch ID</th>
+                        <th>OpenSearch Schema</th>
+                        <th>Legacy Name</th>
+                        <th>Legacy ID</th>
+                        <th>Legacy Schema</th>
+                    </tr>
+                </thead>
+                <tbody>
+"""
+            
+            # Add table rows
+            for _, row in df.iterrows():
+                type_class = "type-person" if row['Type'] == 'Person' else "type-entity"
+                opensearch_schema_class = f"schema-{row['OpenSearch Schema'].lower()}" if row['OpenSearch Schema'] else ""
+                legacy_schema_class = f"schema-{row['Legacy Schema'].lower()}" if row['Legacy Schema'] else ""
+                
+                # Determine status
+                has_opensearch = row['OpenSearch ID'] and row['OpenSearch ID'] != ''
+                has_legacy = row['Legacy ID'] and row['Legacy ID'] != ''
+                
+                if has_opensearch and has_legacy:
+                    status = "Present in Both"
+                    status_class = "status-both"
+                elif has_opensearch and not has_legacy:
+                    status = "OpenSearch Only"
+                    status_class = "status-opensearch-only"
+                elif not has_opensearch and has_legacy:
+                    status = "Legacy Only"
+                    status_class = "status-legacy-only"
+                else:
+                    status = "Not Present"
+                    status_class = "status-legacy-only"
+                
+                # Replace empty values with "Not Present"
+                opensearch_name = row['OpenSearch Name'] if row['OpenSearch Name'] and row['OpenSearch Name'] != '' else 'Not Present'
+                opensearch_id = row['OpenSearch ID'] if row['OpenSearch ID'] and row['OpenSearch ID'] != '' else 'Not Present'
+                opensearch_schema = row['OpenSearch Schema'] if row['OpenSearch Schema'] and row['OpenSearch Schema'] != '' else 'Not Present'
+                legacy_name = row['Legacy Name'] if row['Legacy Name'] and row['Legacy Name'] != '' else 'Not Present'
+                legacy_id = row['Legacy ID'] if row['Legacy ID'] and row['Legacy ID'] != '' else 'Not Present'
+                legacy_schema = row['Legacy Schema'] if row['Legacy Schema'] and row['Legacy Schema'] != '' else 'Not Present'
+                
+                html_content += f"""
+                    <tr>
+                        <td><strong>{row['Test Key']}</strong></td>
+                        <td>{row['Search Term']}</td>
+                        <td><span class="{type_class}">{row['Type']}</span></td>
+                        <td><span class="status-badge {status_class}">{status}</span></td>
+                        <td>{opensearch_name}</td>
+                        <td>{opensearch_id}</td>
+                        <td><span class="schema-badge {opensearch_schema_class}">{opensearch_schema}</span></td>
+                        <td>{legacy_name}</td>
+                        <td>{legacy_id}</td>
+                        <td><span class="schema-badge {legacy_schema_class}">{legacy_schema}</span></td>
+                    </tr>
+"""
+            
+            html_content += """
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <p>Generated by GDC Automation Excel-Driven Regression Testing Framework</p>
+            <p>This report compares OpenSearch API results with Legacy GDC system data</p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+            
+            # Write HTML file
+            with open(filename, 'w', encoding='utf-8') as f:
+                f.write(html_content)
+                
+        except Exception as e:
+            print(f"Error generating HTML report: {e}")
+    
     def generate_individual_reports(self, entity, comparison_result, main_folder=None):
         """
         Generate individual Excel and HTML reports for a single entity
@@ -592,11 +1074,11 @@ class ExcelDrivenRegressionTest:
         
         # Generate HTML report
         html_filename = f"{folder_path}/{safe_name}_regression_{timestamp}.html"
-        self.generate_html_report(entity, comparison_result, html_filename)
+        self.generate_entity_html_report(entity, comparison_result, html_filename)
         
         return excel_filename, html_filename
     
-    def generate_html_report(self, entity, comparison_result, filename):
+    def generate_entity_html_report(self, entity, comparison_result, filename):
         """
         Generate HTML report for a single entity
         """
@@ -805,15 +1287,8 @@ class ExcelDrivenRegressionTest:
         """
         Run regression tests for all entities in the Excel file
         """
-        print("Excel-Driven Regression Testing Framework")
+        print("Excel-Driven Regression Testing Framework - Unified Comparison")
         print("=" * 80)
-        
-        # Create main test run folder with timestamp
-        run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        main_folder = f"results/regression_test_run_{run_timestamp}"
-        os.makedirs(main_folder, exist_ok=True)
-        print(f"Results will be saved to: {main_folder}")
-        print()
         
         # Load entities from Excel
         entities = self.load_entities_from_excel()
@@ -837,26 +1312,24 @@ class ExcelDrivenRegressionTest:
             # Compare data
             comparison_result = self.compare_data(entity['name'], entity['baseline_data'], current_data)
             
-            # Generate individual reports
-            excel_file, html_file = self.generate_individual_reports(entity, comparison_result, main_folder)
+            # Store data for unified comparison
+            self.unified_comparison_data.append({
+                'search_term': entity['name'],
+                'entity_type': entity['type'],
+                'opensearch_results': current_data,
+                'legacy_results': entity['baseline_data']
+            })
             
             # Print summary
             self.print_entity_summary(entity, comparison_result)
-            
-            print(f"\nReports generated for {entity['name']}:")
-            print(f"  Excel: {excel_file}")
-            print(f"  HTML: {html_file}")
-            
-            # Store results for summary
-            all_results.append({
-                "entity": entity,
-                "comparison_result": comparison_result,
-                "excel_file": excel_file,
-                "html_file": html_file
-            })
         
-        # Generate overall summary
-        self.generate_overall_summary(all_results, main_folder)
+        # Generate unified comparison report
+        print(f"\n{'='*80}")
+        print("Generating unified comparison report...")
+        excel_file, html_file = self.generate_unified_comparison_report()
+        if excel_file and html_file:
+            print(f"✅ Reports generated successfully!")
+        print("All tests completed!")
     
     def generate_overall_summary(self, all_results, main_folder=None):
         """
