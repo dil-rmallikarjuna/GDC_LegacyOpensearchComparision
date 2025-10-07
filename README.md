@@ -24,6 +24,11 @@ GDC automation excel driven/
 ├── results/                           # Generated reports
 │   ├── unified_opensearch_vs_legacy_comparison_*.xlsx
 │   └── unified_opensearch_vs_legacy_comparison_*.html
+├── utils/                             # Reusable components
+│   ├── report_generator.py            # Reusable report generation
+│   ├── html_report_generator.py       # HTML report styling
+│   ├── example_usage.py              # Usage examples
+│   └── README.md                      # Utils documentation
 └── testcases/
     └── excel_driven_regression_test.py # Main testing framework
 ```
@@ -45,6 +50,13 @@ GDC automation excel driven/
 - **Separation of Concerns**: Configuration separate from business logic
 - **Easy Updates**: Change API endpoints without touching test code
 - **Environment Support**: Different configs for dev/staging/prod
+
+### ✅ Modular Report Generation
+- **Reusable Components**: Report generation logic in separate `utils/` module
+- **Test Case Independence**: Report changes don't affect test cases
+- **Consistent Format**: All reports use the same Excel/HTML structure
+- **Easy Extension**: New test cases can reuse the same report generator
+- **Flexible Output**: Support for unified, entity-specific, and summary reports
 
 ## Excel Input Format
 The framework reads from `Test terms.xlsx` with the following columns:

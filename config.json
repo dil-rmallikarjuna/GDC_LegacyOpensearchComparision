@@ -10,7 +10,7 @@
     "batch_size": 10,
     "schemas": ["col", "rights", "mex", "watch", "soe", "pep", "sanction", "icij"],
     "search_types": ["keyword", "phonetic", "similarity"],
-    "limit": 100
+    "limit": 1000
   },
   "report": {
     "exclude_ofac": true,

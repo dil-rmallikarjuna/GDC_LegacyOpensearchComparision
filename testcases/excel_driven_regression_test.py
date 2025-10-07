@@ -18,7 +18,7 @@ import re
 # Add parent directory to path to import config and utils
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import config
-from utils.html_report_generator import HTMLReportGenerator
+from utils.report_generator import ReportGenerator
 
 def clean_json_string(json_str):
     """
@@ -70,11 +70,8 @@ class ExcelDrivenRegressionTest:
         # Track entities with corrupted JSON
         self.skipped_entities = []
         
-        # Initialize HTML report generator
-        self.html_generator = HTMLReportGenerator()
-        
-        # Ensure results directory exists
-        os.makedirs(config.results_directory, exist_ok=True)
+        # Initialize report generator
+        self.report_generator = ReportGenerator(config.results_directory)
     
     def load_entities_from_excel(self):
         """
@@ -594,128 +591,23 @@ class ExcelDrivenRegressionTest:
     
     def generate_unified_comparison_report(self):
         """
-        Generate unified comparison reports (Excel and HTML) with the specified format:
-        Test Key, Search Term, Type, OpenSearch Name, OpenSearch ID, OpenSearch Schema, Legacy Name, Legacy ID, Legacy Schema
+        Generate unified comparison reports using the reusable report generator
         """
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        # Use the reusable report generator
+        excel_filename, html_filename = self.report_generator.generate_unified_comparison_report(
+            self.unified_comparison_data,
+            "unified_opensearch_vs_legacy_comparison"
+        )
         
-        # Create unified comparison data
-        unified_data = []
+        # Report skipped entities due to corrupted JSON
+        if self.skipped_entities:
+            print(f"\n⚠️  Skipped Entities (Corrupted JSON): {len(self.skipped_entities)}")
+            for entity in self.skipped_entities[:10]:  # Show first 10
+                print(f"    - {entity}")
+            if len(self.skipped_entities) > 10:
+                print(f"    ... and {len(self.skipped_entities) - 10} more")
         
-        for comparison_data in self.unified_comparison_data:
-            search_term = comparison_data['search_term']
-            entity_type = comparison_data['entity_type']
-            test_key = search_term  # Remove _E and _P suffixes
-            type_label = "Person" if entity_type == "P" else "Entity"
-            
-            # Get OpenSearch results
-            opensearch_results = comparison_data.get('opensearch_results', {})
-            # Get Legacy GDC results
-            legacy_results = comparison_data.get('legacy_results', {})
-            
-            # Process each source
-            all_sources = set(opensearch_results.keys()) | set(legacy_results.keys())
-            
-            for source in all_sources:
-                opensearch_records = opensearch_results.get(source, [])
-                legacy_records = legacy_results.get(source, [])
-                
-                # Create lookup for matching records
-                legacy_by_id = {record.get("ID", ""): record for record in legacy_records}
-                
-                # Process OpenSearch records
-                for opensearch_record in opensearch_records:
-                    opensearch_id = opensearch_record.get("ID", "")
-                    opensearch_name = opensearch_record.get("Full_Name", "") or opensearch_record.get("Entity_Name", "")
-                    opensearch_schema = source.upper()
-                    
-                    # Find matching legacy record
-                    legacy_record = legacy_by_id.get(opensearch_id)
-                    if legacy_record:
-                        legacy_name = legacy_record.get("Full_Name", "") or legacy_record.get("Entity_Name", "")
-                        legacy_id = legacy_record.get("ID", "")
-                        legacy_schema = source.upper()
-                    else:
-                        legacy_name = ""
-                        legacy_id = ""
-                        legacy_schema = ""
-                    
-                    unified_data.append({
-                        "Test Key": test_key,
-                        "Search Term": search_term,
-                        "Type": type_label,
-                        "OpenSearch Name": opensearch_name,
-                        "OpenSearch ID": opensearch_id,
-                        "OpenSearch Schema": opensearch_schema,
-                        "Legacy Name": legacy_name,
-                        "Legacy ID": legacy_id,
-                        "Legacy Schema": legacy_schema
-                    })
-                
-                # Process legacy-only records (not found in OpenSearch)
-                opensearch_ids = {record.get("ID", "") for record in opensearch_records}
-                for legacy_record in legacy_records:
-                    legacy_id = legacy_record.get("ID", "")
-                    if legacy_id not in opensearch_ids:
-                        legacy_name = legacy_record.get("Full_Name", "") or legacy_record.get("Entity_Name", "")
-                        legacy_schema = source.upper()
-                        
-                        unified_data.append({
-                            "Test Key": test_key,
-                            "Search Term": search_term,
-                            "Type": type_label,
-                            "OpenSearch Name": "",
-                            "OpenSearch ID": "",
-                            "OpenSearch Schema": "",
-                            "Legacy Name": legacy_name,
-                            "Legacy ID": legacy_id,
-                            "Legacy Schema": legacy_schema
-                        })
-        
-        # Create DataFrame and save to Excel
-        if unified_data:
-            df = pd.DataFrame(unified_data)
-            
-            # Sort by Test Key, then by OpenSearch Schema, then by OpenSearch ID
-            df = df.sort_values(['Test Key', 'OpenSearch Schema', 'OpenSearch ID'])
-            
-            # Save to Excel
-            excel_filename = os.path.join(config.results_directory, f"unified_opensearch_vs_legacy_comparison_{timestamp}.xlsx")
-            df.to_excel(excel_filename, index=False, sheet_name='Unified Comparison')
-            
-            # Generate HTML report using utility
-            html_filename = os.path.join(config.results_directory, f"unified_opensearch_vs_legacy_comparison_{timestamp}.html")
-            self.html_generator.generate_unified_comparison_report(df, html_filename)
-            
-            print(f"\n✅ Unified comparison reports generated:")
-            print(f"  Excel: {excel_filename}")
-            print(f"  HTML: {html_filename}")
-            print(f"📊 Total comparison records: {len(unified_data)}")
-            
-            # Print summary statistics
-            total_opensearch_records = len([r for r in unified_data if r['OpenSearch ID']])
-            total_legacy_records = len([r for r in unified_data if r['Legacy ID']])
-            matched_records = len([r for r in unified_data if r['OpenSearch ID'] and r['Legacy ID']])
-            
-            print(f"📈 Summary Statistics:")
-            print(f"  OpenSearch records: {total_opensearch_records}")
-            print(f"  Legacy GDC records: {total_legacy_records}")
-            print(f"  Matched records: {matched_records}")
-            print(f"  OpenSearch-only records: {total_opensearch_records - matched_records}")
-            print(f"  Legacy-only records: {total_legacy_records - matched_records}")
-            
-            # Report skipped entities due to corrupted JSON
-            if self.skipped_entities:
-                print(f"\n⚠️  Skipped Entities (Corrupted JSON): {len(self.skipped_entities)}")
-                for entity in self.skipped_entities[:10]:  # Show first 10
-                    print(f"    - {entity}")
-                if len(self.skipped_entities) > 10:
-                    print(f"    ... and {len(self.skipped_entities) - 10} more")
-            
-            return excel_filename, html_filename
-        else:
-            print("❌ No comparison data available to generate report")
-            return None, None
+        return excel_filename, html_filename
     
     
     
