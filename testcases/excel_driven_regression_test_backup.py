@@ -104,7 +104,7 @@ class ExcelDrivenRegressionTest:
                                 self.skipped_entities.append(entity['name'])
                                 entity["baseline_data"] = {}
                             else:
-                                gdc_data = json.loads(entity["current_gdc_response"])
+                            gdc_data = json.loads(entity["current_gdc_response"])
                                 entity["baseline_data"] = self.parse_gdc_response(gdc_data, entity["name"])
                         else:
                             entity["baseline_data"] = {}
@@ -235,7 +235,7 @@ class ExcelDrivenRegressionTest:
         for attempt in range(max_retries):
             try:
                 print(f"Calling OpenSearch API for {entity_name} (Type: {entity_type})... (Attempt {attempt + 1}/{max_retries})")
-                print(f"Payload: {payload}")
+            print(f"Payload: {payload}")
             
                 response = requests.post(
                     config.api_config["url"],
@@ -243,15 +243,15 @@ class ExcelDrivenRegressionTest:
                     headers=headers,
                     timeout=config.api_config["timeout"]
                 )
-                response.raise_for_status()
+            response.raise_for_status()
             
-                api_result = response.json()
-                print(f"API Response received successfully")
+            api_result = response.json()
+            print(f"API Response received successfully")
             
             # Transform API response to match our expected format
-                return self.transform_opensearch_response(api_result)
+            return self.transform_opensearch_response(api_result)
             
-            except requests.exceptions.RequestException as e:
+        except requests.exceptions.RequestException as e:
                 print(f"Error calling OpenSearch API (Attempt {attempt + 1}): {e}")
                 if attempt < max_retries - 1:
                     print(f"Retrying in {retry_delay} seconds...")
@@ -262,7 +262,7 @@ class ExcelDrivenRegressionTest:
                     break
         
         # Return empty data structure if all API calls fail
-        return {
+            return {
             "col": [],
             "rights": [],
             "mex": [],
@@ -356,18 +356,6 @@ class ExcelDrivenRegressionTest:
                 # Fallback: use hash of _id if no recid found
                 recid = hash(record["_id"]) % 10000000  # Convert to reasonable number
             
-            # For ICIJ records, be more lenient with recid extraction
-            if not recid and (source_data.get("RecType") == "ICIJ" or "icij" in str(source_data.get("_index", "")).lower()):
-                # Use ID field as recid for ICIJ records if no recid found
-                if "ID" in source_data:
-                    try:
-                        recid = int(source_data["ID"]) % 10000000
-                    except (ValueError, TypeError):
-                        recid = hash(str(source_data["ID"])) % 10000000
-                else:
-                    # Last resort: use a hash of the record
-                    recid = hash(str(source_data)) % 10000000
-            
             if not recid:
                 return None
             
@@ -380,7 +368,7 @@ class ExcelDrivenRegressionTest:
                     full_name = f"{first_name} {last_name}".strip()
             
             # Handle ICIJ differently - it has different schema
-            if source_data.get("RecType") == "ICIJ" or "icij" in str(record.get("_index", "")).lower():
+            if source_data.get("RecType") == "ICIJ" or "icij" in str(source_data.get("_index", "")).lower():
                 # For ICIJ, try to get name from multiple possible fields
                 icij_name = (source_data.get("name", "") or 
                             source_data.get("Entity_Name", "") or 
@@ -402,7 +390,7 @@ class ExcelDrivenRegressionTest:
                     "Entity_Type": source_data.get("Entity_Type", "")   # ICIJ specific field
                 }
             else:
-                return {
+            return {
                 "recid": recid,
                 "ID": source_data.get("ID", ""),
                 "First_Name": source_data.get("First_Name", ""),
@@ -411,7 +399,7 @@ class ExcelDrivenRegressionTest:
                 "Other_Names": source_data.get("Other_Names", source_data.get("otherNames", "")),
                 "AltScript": source_data.get("AltScript", ""),
                 "RecType": source_data.get("RecType", "")
-        }
+            }
             
         except Exception as e:
             print(f"Error normalizing record: {e}")

@@ -80,13 +80,23 @@ class ReportGenerator:
                 # Process OpenSearch records
                 for opensearch_record in opensearch_records:
                     opensearch_id = opensearch_record.get("ID", "")
-                    opensearch_name = opensearch_record.get("Full_Name", "") or opensearch_record.get("Entity_Name", "")
+                    # For ICIJ records, try multiple name fields
+                    opensearch_name = (opensearch_record.get("Full_Name", "") or 
+                                     opensearch_record.get("Entity_Name", "") or 
+                                     opensearch_record.get("name", "") or
+                                     opensearch_record.get("First_Name", "") or
+                                     opensearch_record.get("Last_Name", ""))
                     opensearch_schema = source.upper()
                     
                     # Find matching legacy record
                     legacy_record = legacy_by_id.get(opensearch_id)
                     if legacy_record:
-                        legacy_name = legacy_record.get("Full_Name", "") or legacy_record.get("Entity_Name", "")
+                        # For ICIJ records, try multiple name fields
+                        legacy_name = (legacy_record.get("Full_Name", "") or 
+                                     legacy_record.get("Entity_Name", "") or 
+                                     legacy_record.get("name", "") or
+                                     legacy_record.get("First_Name", "") or
+                                     legacy_record.get("Last_Name", ""))
                         legacy_id = legacy_record.get("ID", "")
                         legacy_schema = source.upper()
                     else:
@@ -111,7 +121,12 @@ class ReportGenerator:
                 for legacy_record in legacy_records:
                     legacy_id = legacy_record.get("ID", "")
                     if legacy_id not in opensearch_ids:
-                        legacy_name = legacy_record.get("Full_Name", "") or legacy_record.get("Entity_Name", "")
+                        # For ICIJ records, try multiple name fields
+                        legacy_name = (legacy_record.get("Full_Name", "") or 
+                                     legacy_record.get("Entity_Name", "") or 
+                                     legacy_record.get("name", "") or
+                                     legacy_record.get("First_Name", "") or
+                                     legacy_record.get("Last_Name", ""))
                         legacy_schema = source.upper()
                         
                         unified_data.append({
